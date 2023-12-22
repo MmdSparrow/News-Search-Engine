@@ -9,8 +9,4 @@ class LinguisticModule:
 
     def delete_50_most_repeated_words(self, dictionary: dict):
         for i in range(min(self.most_repeated_word.LENGTH, len(dictionary))):
-            dictionary.pop(self.most_repeated_word.queue[i])
-
-    # def stemming(self, dictionary: dict):
-    #
-    #     stemmer.FindStems().convert_to_stem()
+            dictionary.pop(self.most_repeated_word.queue[i][0])
