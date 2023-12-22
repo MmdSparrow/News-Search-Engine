@@ -47,6 +47,7 @@ class PositionalIndex:
         self.dictionary[word][1][doc_id][1].append(position)  # add position
 
 
-positional_index = PositionalIndex()
-positional_index.handler()
-print(positional_index.dictionary)
+# test
+# positional_index = PositionalIndex()
+# positional_index.handler()
+# print(positional_index.dictionary)
