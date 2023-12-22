@@ -1,5 +1,7 @@
-from PriorityQueueWithFixedLength import PriorityQueueWithFixedLength
+from parsivar import stemmer
 
+from PriorityQueueWithFixedLength import PriorityQueueWithFixedLength
+from Stemmer import Stemmer
 
 class Tokenizer:
     def __init__(self):
@@ -7,19 +9,21 @@ class Tokenizer:
         pass
 
     def tokenize(self, document_content: list[str], document_len: int, dictionary: dict,
-                 priority_queue_with_fixed_length: PriorityQueueWithFixedLength) -> None:
+                 priority_queue_with_fixed_length: PriorityQueueWithFixedLength, stemmer: Stemmer) -> None:
         for i in range(document_len):
             self.__doc_tokenize(str(i + 1), document_content[i], dictionary, priority_queue_with_fixed_length)
 
     def __doc_tokenize(self, doc_id: str, doc_string: str, dictionary: dict,
-                       priority_queue_with_fixed_length: PriorityQueueWithFixedLength) -> None:
+                       priority_queue_with_fixed_length: PriorityQueueWithFixedLength, stemmer: Stemmer) -> None:
         word = ''
         position = 1
         for char in doc_string.strip():
             # todo: be nazaram in " or char == half_space_char " nabashe behtare
             if char == ' ' or char == '\t' or char == '\n':
-                if word.strip() != '':
+                word = word.strip()
+                if word != '':
                     # add word to stream token
+                    word = stemmer.stem(word)
                     # self.stream_token.append((word, position, doc_id))
                     word_frequency = self.__add_to_dictionary_and_postings_list(word, doc_id, position, dictionary)
                     priority_queue_with_fixed_length.push(word, word_frequency)

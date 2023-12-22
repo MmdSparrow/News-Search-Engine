@@ -20,7 +20,6 @@ class PositionalIndex:
         # create index
         linguistic_module = LinguisticModule()
         linguistic_module.delete_50_most_repeated_words(self.dictionary)
-        linguistic_module.stemming(self.dictionary)
 
         tokenizer = Tokenizer()
-        tokenizer.tokenize(document_content, document_length, self.dictionary, )
+        tokenizer.tokenize(document_content, document_length, self.dictionary, linguistic_module.most_repeated_word, linguistic_module.stemmer)
