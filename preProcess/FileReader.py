@@ -11,6 +11,8 @@ class FileReader:
         f = open(path)
         data = json.load(f)
         documents_len = len(data)
+        # for test uncomment following line
+        documents_len = 2
 
         for i in range(0, documents_len):
             i_string = str(i)

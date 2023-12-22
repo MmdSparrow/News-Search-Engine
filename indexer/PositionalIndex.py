@@ -22,4 +22,7 @@ class PositionalIndex:
         linguistic_module.delete_50_most_repeated_words(self.dictionary)
 
         tokenizer = Tokenizer()
-        tokenizer.tokenize(document_content, document_length, self.dictionary, linguistic_module.most_repeated_word, linguistic_module.stemmer)
+        tokenizer.tokenize(document_content, document_length, self.dictionary, linguistic_module.most_repeated_word,
+                           linguistic_module.stemmer)
+
+        print(self.dictionary)
