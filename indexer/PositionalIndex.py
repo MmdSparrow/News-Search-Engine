@@ -31,21 +31,20 @@ class PositionalIndex:
     def __create(self, stream_token, word_frequency_dict, stemmer):
         for word, doc_id, position in stream_token:
             if word_frequency_dict.keys().__contains__(word):
-                word = stemmer.stem(word)
-                self.__add_to_dictionary_and_postings_list(word, doc_id, position)
+                word_new = stemmer.stem(word)
+                self.__add_to_dictionary_and_postings_list(word_new, doc_id, position)
 
-    def __add_to_dictionary_and_postings_list(self, word: str, doc_id: str, position: int) -> int:
+    def __add_to_dictionary_and_postings_list(self, word: str, doc_id: str, position: int) -> None:
         if not self.dictionary.keys().__contains__(word):
             self.dictionary[word] = [0, {}]
-            # if dictionary not contain the doc_id
-            if not self.dictionary[word][1].__contains__(doc_id):
-                self.dictionary[word][1][doc_id] = [0, []]
+        # if dictionary not contain the doc_id
+        if not self.dictionary[word][1].__contains__(doc_id):
+            self.dictionary[word][1][doc_id] = [0, []]
 
         # add to dictionary
         self.dictionary[word][0] += 1  # increment collection frequency of word
-        self.dictionary[word][0][doc_id][0] += 1  # increment document frequency of doc and word
+        self.dictionary[word][1][doc_id][0] += 1  # increment document frequency of doc and word
         self.dictionary[word][1][doc_id][1].append(position)  # add position
-        return self.dictionary[word][0]
 
 
 positional_index = PositionalIndex()
