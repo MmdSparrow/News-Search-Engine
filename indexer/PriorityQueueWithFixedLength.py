@@ -1,6 +1,3 @@
-import collections
-
-
 class PriorityQueueWithFixedLength:
     LENGTH = 50
 
@@ -17,13 +14,14 @@ class PriorityQueueWithFixedLength:
         else:
             if len(self.queue) == self.LENGTH:
                 self.queue.sort(key=self.sort_key)
-                self.queue[0] = (word, frequency)
-            else:
-                self.queue.append((word, frequency))
+                self.queue[0] = [word, frequency]
+            else: # if was smaller than LENGTH
+                self.queue.append([word, frequency])
 
     def __contain(self, item):
-        for i in range(0, self.LENGTH):
-            if self.queue[i][0] == item: return i
+        for i in range(0, len(self.queue)):
+            if self.queue[i][0] == item:
+                return i
         return -1
 
     def sort_key(self, element):

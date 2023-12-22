@@ -1,4 +1,4 @@
-from indexer.LinguisticModule import LinguisticModule
+from LinguisticModule import LinguisticModule
 from preProcess.PreProcessor import PreProcessor
 from Tokenizer import Tokenizer
 
@@ -12,7 +12,7 @@ class PositionalIndex:
 
     # this method sort indexes
 
-    def handler(self):
+    def create(self):
         # pre process documents
         preProcess = PreProcessor()
         document_length, document_content = preProcess.handler()
@@ -25,4 +25,7 @@ class PositionalIndex:
         tokenizer.tokenize(document_content, document_length, self.dictionary, linguistic_module.most_repeated_word,
                            linguistic_module.stemmer)
 
-        print(self.dictionary)
+
+positional_index = PositionalIndex()
+positional_index.create()
+print(positional_index.dictionary)

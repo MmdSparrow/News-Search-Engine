@@ -1,7 +1,6 @@
-from parsivar import stemmer
-
 from PriorityQueueWithFixedLength import PriorityQueueWithFixedLength
-from Stemmer import Stemmer
+from CustomStemmer import CustomStemmer
+
 
 class Tokenizer:
     def __init__(self):
@@ -9,12 +8,14 @@ class Tokenizer:
         pass
 
     def tokenize(self, document_content: list[str], document_len: int, dictionary: dict,
-                 priority_queue_with_fixed_length: PriorityQueueWithFixedLength, stemmer: Stemmer) -> None:
+                 priority_queue_with_fixed_length: PriorityQueueWithFixedLength, stemmer: CustomStemmer) -> None:
         for i in range(document_len):
-            self.__doc_tokenize(str(i + 1), document_content[i], dictionary, priority_queue_with_fixed_length)
+            # todo: doc id nabayad az yek shoro beshe
+            # self.__doc_tokenize(str(i + 1), document_content[i], dictionary, priority_queue_with_fixed_length, stemmer)
+            self.__doc_tokenize(str(i), document_content[i], dictionary, priority_queue_with_fixed_length, stemmer)
 
     def __doc_tokenize(self, doc_id: str, doc_string: str, dictionary: dict,
-                       priority_queue_with_fixed_length: PriorityQueueWithFixedLength, stemmer: Stemmer) -> None:
+                       priority_queue_with_fixed_length: PriorityQueueWithFixedLength, stemmer: CustomStemmer) -> None:
         word = ''
         position = 1
         for char in doc_string.strip():
@@ -38,15 +39,24 @@ class Tokenizer:
             priority_queue_with_fixed_length.push(word, word_frequency)
 
     def __add_to_dictionary_and_postings_list(self, word: str, doc_id: str, position: int, dictionary: dict) -> int:
-        # new if not exist
-        if dictionary[word] is None:
-            dictionary[word] = (0, {})
-            dictionary[word][1][doc_id] = (0, [])
+        # guid:
+        # dictionary[word][0]: collection frequency
+        # dictionary[word][1]: dictionary of docs
+        # dictionary[word][1][doc_it][0]: document frequency
+        # dictionary[word][1][doc_it][1]: positions
+
+        # if dictionary not contain the word
+        # i used list instead of tuple because tuple is mutable
+        if not dictionary.keys().__contains__(word):
+            dictionary[word] = [0, {}]
+            # if dictionary not contain the doc_id
+            if not dictionary[word][1].__contains__(doc_id):
+                dictionary[word][1][doc_id] = [0, []]
 
         # add to dictionary
-        dictionary[word][1][doc_id][0] += 1
-        dictionary[word][1][doc_id][1].append(position)
         dictionary[word][0] += 1  # increment collection frequency of word
+        dictionary[word][0][doc_id][0] += 1  # increment document frequency of doc and word
+        dictionary[word][1][doc_id][1].append(position)  # add position
         return dictionary[word][0]
 
         # if dictionary[word] is not None:

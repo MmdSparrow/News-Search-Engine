@@ -1,13 +1,14 @@
 from PriorityQueueWithFixedLength import PriorityQueueWithFixedLength
-from Stemmer import Stemmer
+from CustomStemmer import CustomStemmer
+
 
 class LinguisticModule:
     def __init__(self):
         self.most_repeated_word = PriorityQueueWithFixedLength()
-        self.stemmer = Stemmer()
+        self.stemmer = CustomStemmer()
 
     def delete_50_most_repeated_words(self, dictionary: dict):
-        for i in range(self.most_repeated_word.LENGTH):
+        for i in range(min(self.most_repeated_word.LENGTH, len(dictionary))):
             dictionary.pop(self.most_repeated_word.queue[i])
 
     # def stemming(self, dictionary: dict):
