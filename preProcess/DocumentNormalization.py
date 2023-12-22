@@ -1,40 +1,41 @@
 import re
 
-SPACE_CHARACTER = ' '
-HALF_SPACE_CHARACTER = chr(0x200c)
-
 
 class DocumentNormalization:
+    SPACE_CHARACTER = ' '
+    HALF_SPACE_CHARACTER = chr(0x200c)
+
     def __init__(self):
         pass
 
-    def normalize(self, doc) -> str:
-        doc = self.space_correction(doc)
-        doc = self.unicode_replacement(doc)
-        doc = self.character_delete(doc)
-        doc = self.english_digit_replacement(doc)
-        doc = self.space_correction(doc)
-        return doc
+    def normalize(self, documents_content, documents_content_length):
+        for i in range(documents_content_length):
+            doc = self.__space_correction(documents_content[i])
+            doc = self.__unicode_replacement(doc)
+            doc = self.__character_delete(doc)
+            doc = self.__english_digit_replacement(doc)
+            self.__space_correction(doc)
 
-    def space_correction(self, doc_string: str):
+    def __space_correction(self, doc_string: str):
 
         SPACE_POSTFIX = ['ی', 'ای', 'ها', 'های', 'هایی', 'تر', 'ترین', 'گر', 'گری', 'ام', 'ات', 'اش']
         SPACE_PREFIX = ['می', 'نمی']
 
         space_correction_items = {}
         for postfix in SPACE_POSTFIX:
-            space_correction_items[SPACE_CHARACTER + postfix + SPACE_CHARACTER] = HALF_SPACE_CHARACTER + postfix
+            space_correction_items[
+                self.SPACE_CHARACTER + postfix + self.SPACE_CHARACTER] = self.HALF_SPACE_CHARACTER + postfix
 
         for prefix in SPACE_PREFIX:
             space_correction_items[
-                SPACE_CHARACTER + prefix + SPACE_CHARACTER] = SPACE_CHARACTER + prefix + HALF_SPACE_CHARACTER
+                self.SPACE_CHARACTER + prefix + self.SPACE_CHARACTER] = self.SPACE_CHARACTER + prefix + self.HALF_SPACE_CHARACTER
 
         space_correction_items = dict((re.escape(k), v) for k, v in space_correction_items.items())
         space_correction_pattern = re.compile("|".join(space_correction_items.keys()))
 
         return space_correction_pattern.sub(lambda m: space_correction_items[re.escape(m.group(0))], doc_string)
 
-    def unicode_replacement(self, doc_string):
+    def __unicode_replacement(self, doc_string):
 
         unicode_replacement_items = {}
 
@@ -78,13 +79,22 @@ class DocumentNormalization:
 
         return unicode_replacement_pattern.sub(lambda m: unicode_replacement_items[re.escape(m.group(0))], doc_string)
 
-    def character_delete(self, doc_string):
-        #todo:
-        character_delete_keys = []
-        character_delete_value = ''
-        return doc_string
+    def __character_delete(self, doc_string):
+        # alef keshide bayad character ghablish fathe bashe baadesh alef biad un moghe mishe alef keshide. pas bayad ghabl az hazf fathe hazf shavad!
+        CHARACTER_DELETE_KEYS = ['ْ', 'ٌ', 'ٍ', 'ً', 'ُ', 'ِ', 'َ', 'ّ', '!', '>', '<', ',', '،', 'ٰ', '؛', ':', '{',
+                                 '}', '[', ']', ')', '(', '*', ';', '\"', '\'']
+        CHARACTER_DELETE_VALUE = ''
 
-    def english_digit_replacement(self, doc_string):
+        character_delete_item = []
+        for char in CHARACTER_DELETE_KEYS:
+            character_delete_item[char] = CHARACTER_DELETE_VALUE
+
+        character_delete_item = dict((re.escape(k), v) for k, v in character_delete_item.items())
+        character_delete_pattern = re.compile("|".join(character_delete_item.keys()))
+
+        return character_delete_pattern.sub(lambda m: character_delete_item[re.escape(m.group(0))], doc_string)
+
+    def __english_digit_replacement(self, doc_string):
 
         ENGLSIH_DIGITS = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
         PERSIAN_DIGITS = ['۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹']
@@ -99,6 +109,6 @@ class DocumentNormalization:
 
         return digit_replacement_pattern.sub(lambda m: digit_replacement_items[re.escape(m.group(0))], doc_string)
 
-    def verb_prefix_separation(self, doc_string):
-        #todo:
+    def __verb_prefix_separation(self, doc_string):
+        # todo:
         return doc_string

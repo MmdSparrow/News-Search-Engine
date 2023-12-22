@@ -1,5 +1,4 @@
-from preProcess.tokenizer import doc_tokenize
-from re import sub
+from indexer.Tokenizer import doc_tokenize
 import re
 
 s = "تست می کنم این را تست  نیم‌فاصله"
