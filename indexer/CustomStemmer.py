@@ -1,4 +1,3 @@
-# from hazm import Stemmer
 from parsivar.stemmer import FindStems
 
 class CustomStemmer:

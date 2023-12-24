@@ -8,13 +8,22 @@ class DocumentNormalization:
     def __init__(self):
         pass
 
-    def normalize(self, documents_content, documents_content_length):
+    def normalize(self, documents_content: list, documents_content_length: int):
         for i in range(documents_content_length):
             doc = self.__space_correction(documents_content[i])
             doc = self.__unicode_replacement(doc)
             doc = self.__character_delete(doc)
             doc = self.__english_digit_replacement(doc)
-            self.__space_correction(doc)
+            doc = self.__verb_prefix_separation(doc)
+            documents_content[i] = self.__two_parts_verb_aggregation(doc)
+
+    def normalize(self, query: str):
+        query = self.__space_correction(query)
+        query = self.__unicode_replacement(query)
+        query = self.__character_delete(query)
+        query = self.__english_digit_replacement(query)
+        query = self.__verb_prefix_separation(query)
+        return self.__two_parts_verb_aggregation(query)
 
     def __space_correction(self, doc_string: str):
 
@@ -24,7 +33,7 @@ class DocumentNormalization:
         space_correction_items = {}
         for postfix in SPACE_POSTFIX:
             space_correction_items[
-                self.SPACE_CHARACTER + postfix + self.SPACE_CHARACTER] = self.HALF_SPACE_CHARACTER + postfix
+                self.SPACE_CHARACTER + postfix + self.SPACE_CHARACTER] = self.HALF_SPACE_CHARACTER + postfix + self.SPACE_CHARACTER
 
         for prefix in SPACE_PREFIX:
             space_correction_items[
@@ -85,7 +94,7 @@ class DocumentNormalization:
                                  '}', '[', ']', ')', '(', '*', ';', '\"', '\'']
         CHARACTER_DELETE_VALUE = ''
 
-        character_delete_item = []
+        character_delete_item = {}
         for char in CHARACTER_DELETE_KEYS:
             character_delete_item[char] = CHARACTER_DELETE_VALUE
 
@@ -110,5 +119,9 @@ class DocumentNormalization:
         return digit_replacement_pattern.sub(lambda m: digit_replacement_items[re.escape(m.group(0))], doc_string)
 
     def __verb_prefix_separation(self, doc_string):
+        # todo:
+        return doc_string
+
+    def __two_parts_verb_aggregation(self, doc_string):
         # todo:
         return doc_string
