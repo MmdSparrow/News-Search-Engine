@@ -17,21 +17,40 @@
 #
 # def get_verb_with_mi():
 
-import parsivar
+#
+# from test.A import A
+# from test.B import B
+#
+# # s="hello     word  "
+# # print(s.strip()+s)
+#
+#
+# a = A()
+# b = B()
+#
+#
+# print(a.mylist)
+#
+# b.foo(a.myage, a.mylist)
+#
+# print(a.mylist)
 
-from test.A import A
-from test.B import B
 
-# s="hello     word  "
-# print(s.strip()+s)
+# t_list=[("a",1),("b",2),("c",3)]
+# test_tuple= ("test", 1)
+# t_list[0]=("d",4)
+# print(t_list)
 
+# print(test_tuple.)
 
-a = A()
-b = B()
+dict = {
+    "1": 10000,
+    "2": 2,
+    "3": 3,
+    "70": 400,
+    "1000": 5,
+    "100": [12312312],
+    "13": [1231213312],
+}
 
-
-print(a.mylist)
-
-b.foo(a.myage, a.mylist)
-
-print(a.mylist)
+print(dict.keys())

@@ -1,0 +1,71 @@
+from preProcess.PreProcessor import PreProcessor
+import math
+
+
+class ScoringVector:
+    def __init__(self):
+        pass
+
+    def create(self, documents_length: int, dictionary: dict):
+        # doc id, sqrt(w1^2+w2^2+....)
+        doc_cosine_normalization_denominator = {}
+        for word in dictionary.keys():
+            for doc_id in dictionary[word][1].keys():
+                self.__document_tf_idf_calculator(word, doc_id, documents_length, dictionary)
+                if doc_cosine_normalization_denominator.keys().__contains__(doc_id):
+                    doc_cosine_normalization_denominator[doc_id] += dictionary[word][2][doc_id][1]
+                else:
+                    doc_cosine_normalization_denominator[doc_id] = dictionary[word][2][doc_id][1]
+                    # now we normalize calculated weight
+        for word in dictionary.keys():
+            for doc_id in dictionary[word][1].keys():
+                dictionary[word][2][doc_id][1] = dictionary[word][2][doc_id][1] / doc_cosine_normalization_denominator[doc_id]
+
+    def __document_tf_idf_calculator(self, term: str, doc_id: str, documents_length: int, dictionary: dict):
+        dictionary[term][2][doc_id][1] = (1 + math.log(dictionary[term][2][doc_id][0], 10)) * math.log(documents_length / dictionary[term][1], 10)
+
+    def similarity_query_and_doc(self, query, doc_id: str, documents_length: int, dictionary: dict):
+        similarity = 0
+        query_tf_idf = self.__query_tf_idf_calculator(query, documents_length, dictionary)
+        for word in query_tf_idf.keys():
+            if dictionary.keys().__contains__(word) and dictionary[word][2].__contains__(doc_id):
+                similarity += query_tf_idf[word] * dictionary[word][2][doc_id][1]
+        return similarity
+
+    def __query_tf_idf_calculator(self, query: str, documents_length: int, dictionary: dict) -> dict:
+        # at first we normalize query
+        preprocessor = PreProcessor()
+        query = preprocessor.query_preprocessor_handler(query)
+        query_word_frequency_dict = self.__word_frequency_in_query_calculator(query)
+        query_tf_idf = {}
+        query_cosine_normalization_denominator = 0
+        for word in query_word_frequency_dict.keys():
+            query_tf_idf[word] = (1 + math.log(query_word_frequency_dict[word], 10)) * math.log(documents_length / dictionary[word][1], 10)
+            query_cosine_normalization_denominator += query_tf_idf[word]
+        for word in query_tf_idf.keys():
+            query_tf_idf[word] = query_tf_idf[word] / query_cosine_normalization_denominator
+        return query_tf_idf
+
+    def __word_frequency_in_query_calculator(self, query: str):
+        word_frequency = {}
+        word = ''
+        for char in query.strip():
+            if char == ' ' or char == '\t' or char == '\n':
+                word = word.strip()
+                if word != '':
+                    # if word already is in word_frequency
+                    if word_frequency.keys().__contains__(word):
+                        word_frequency[word] += 1
+                    else:
+                        word_frequency[word] = 1
+                    word = ''
+            else:
+                word += char
+
+        if word.strip() != '':
+            if word_frequency.keys().__contains__(word):
+                word_frequency[word] += 1
+            else:
+                word_frequency[word] = 1
+
+        return word_frequency

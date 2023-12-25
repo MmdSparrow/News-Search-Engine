@@ -1,20 +1,22 @@
-from FileReader import FileReader
-from DocumentNormalization import DocumentNormalization
+from preProcess.FileReader import FileReader
+from preProcess.Normalizer import Normalizer
 
 
 class PreProcessor:
     def __init__(self):
         pass
 
-    def handler(self):
-        documents_content = []
-
+    def document_preprocessor_handler(self):
         # read
         fileReader = FileReader()
-        documents_length = fileReader.read_file(documents_content)
+        documents_length, documents_content, documents_title_url_dict = fileReader.read_file()
 
         # normalize documents
-        documentNormalization = DocumentNormalization()
-        documentNormalization.normalize(documents_content, documents_length)
+        normalizer = Normalizer()
+        normalizer.normalize_document(documents_content, documents_length)
 
-        return documents_length, documents_content
+        return documents_length, documents_content, documents_title_url_dict
+
+    def query_preprocessor_handler(self, query):
+        normalizer = Normalizer()
+        return normalizer.normalize_query(query)

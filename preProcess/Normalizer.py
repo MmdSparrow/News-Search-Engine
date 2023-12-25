@@ -1,29 +1,29 @@
 import re
 
 
-class DocumentNormalization:
+class Normalizer:
     SPACE_CHARACTER = ' '
     HALF_SPACE_CHARACTER = chr(0x200c)
 
     def __init__(self):
         pass
 
-    def normalize(self, documents_content: list, documents_content_length: int):
+    def normalize_document(self, documents_content: list, documents_content_length: int):
         for i in range(documents_content_length):
             doc = self.__space_correction(documents_content[i])
             doc = self.__unicode_replacement(doc)
             doc = self.__character_delete(doc)
             doc = self.__english_digit_replacement(doc)
             doc = self.__verb_prefix_separation(doc)
-            documents_content[i] = self.__two_parts_verb_aggregation(doc)
+            documents_content[i] = self.__abbreviation_replacement(doc)
 
-    def normalize(self, query: str):
+    def normalize_query(self, query: str):
         query = self.__space_correction(query)
         query = self.__unicode_replacement(query)
         query = self.__character_delete(query)
         query = self.__english_digit_replacement(query)
         query = self.__verb_prefix_separation(query)
-        return self.__two_parts_verb_aggregation(query)
+        return self.__abbreviation_replacement(query)
 
     def __space_correction(self, doc_string: str):
 
@@ -92,7 +92,7 @@ class DocumentNormalization:
         # alef keshide bayad character ghablish fathe bashe baadesh alef biad un moghe mishe alef keshide. pas bayad ghabl az hazf fathe hazf shavad!
         CHARACTER_DELETE_KEYS = ['ْ', 'ٌ', 'ٍ', 'ً', 'ُ', 'ِ', 'َ', 'ّ', '!', '>', '<', ',', '،', 'ٰ', '؛', ':', '{',
                                  '}', '[', ']', ')', '(', '*', ';', '\"', '\'']
-        CHARACTER_DELETE_VALUE = ''
+        CHARACTER_DELETE_VALUE = ' '  # space is better than nothing: 'cuase the writing rules may not have been followed correctly (eg. lab lab lab.lab lab lab)
 
         character_delete_item = {}
         for char in CHARACTER_DELETE_KEYS:
@@ -119,9 +119,43 @@ class DocumentNormalization:
         return digit_replacement_pattern.sub(lambda m: digit_replacement_items[re.escape(m.group(0))], doc_string)
 
     def __verb_prefix_separation(self, doc_string):
-        # todo:
-        return doc_string
+        verb_prefix_separation_items = {}
+        verb_prefix_separation_items[self.SPACE_CHARACTER + 'می'] = self.SPACE_CHARACTER + 'می' + self.HALF_SPACE_CHARACTER
+        verb_prefix_separation_items[self.SPACE_CHARACTER + 'نمی'] = self.SPACE_CHARACTER + 'نمی' + self.HALF_SPACE_CHARACTER
 
-    def __two_parts_verb_aggregation(self, doc_string):
-        # todo:
-        return doc_string
+        verb_prefix_separation_items = dict((re.escape(k), v) for k, v in verb_prefix_separation_items.items())
+        verb_prefix_separation_pattern = re.compile("|".join(verb_prefix_separation_items.keys()))
+
+        return verb_prefix_separation_pattern.sub(lambda m: verb_prefix_separation_items[re.escape(m.group(0))], doc_string)
+
+    def __abbreviation_replacement(self, doc_string):
+        persian_abbreviation_dict = {}
+        persian_abbreviation_dict['آجا'] = ['ارتش جمهوری اسلامی ایران']
+        persian_abbreviation_dict['ناجا'] = ['نیروی انتظامی جمهوری اسلامی ایران']
+        persian_abbreviation_dict['نوپو'] = ['نیروی ویژه پاد وحشت']
+        persian_abbreviation_dict['پاد'] = ['پایگاه اطلاع رسانی دولت']
+        persian_abbreviation_dict['آپ'] = ['آسان پرداخت']
+        persian_abbreviation_dict['برجام'] = ['برنامه جامع اقدام مشترک']
+        persian_abbreviation_dict['N.A.S.A'] = ['سازمان ملی هوانوردی و فضایی']
+        persian_abbreviation_dict['NASA'] = ['سازمان ملی هوانوردی و فضایی']
+        persian_abbreviation_dict['ناسا'] = ['سازمان ملی هوانوردی و فضایی']
+        persian_abbreviation_dict['ج.ا.ا'] = ['جمهوری اسلامی ایران']
+        persian_abbreviation_dict['USA'] = ['آمریکا']
+        persian_abbreviation_dict['U.S.A'] = ['آمریکا']
+        persian_abbreviation_dict['شبا'] = ['شماره حساب بانکی']
+        persian_abbreviation_dict['ره'] = ['رحمت الله علیه']
+        persian_abbreviation_dict['س'] = ['سلام الله علیها']
+        persian_abbreviation_dict['ساتا'] = ['سازمان تایمن اجتماعی']
+        persian_abbreviation_dict['ساتنا'] = ['سازمان تسویه ناخالص آنی']
+        persian_abbreviation_dict['ساجا'] = ['سازمان ارتش جمهوری اسلامی']
+        persian_abbreviation_dict['ساجب'] = ['سازمان جهانی بهداشت']
+        persian_abbreviation_dict['سادا'] = ['سازمان اسلامی دانشجویان ایران']
+        persian_abbreviation_dict['اتکا'] = ['اداره تدارکات کارمندان ارتش']
+        abbreviation_items = {}
+        for key in persian_abbreviation_dict.keys():
+            abbreviation_items[self.SPACE_CHARACTER + key + self.SPACE_CHARACTER] = self.SPACE_CHARACTER + persian_abbreviation_dict[key] + self.SPACE_CHARACTER
+
+        persian_abbreviation_dict = dict((re.escape(k), v) for k, v in persian_abbreviation_dict.items())
+        persian_abbreviation_pattern = re.compile("|".join(persian_abbreviation_dict.keys()))
+
+        return persian_abbreviation_pattern.sub(lambda m: persian_abbreviation_dict[re.escape(m.group(0))], doc_string)
