@@ -10,7 +10,7 @@ class ScoringVector:
         # doc id, sqrt(w1^2+w2^2+....)
         doc_cosine_normalization_denominator = {}
         for word in dictionary.keys():
-            for doc_id in dictionary[word][1].keys():
+            for doc_id in dictionary[word][2].keys():
                 self.__document_tf_idf_calculator(word, doc_id, documents_length, dictionary)
                 if doc_cosine_normalization_denominator.keys().__contains__(doc_id):
                     doc_cosine_normalization_denominator[doc_id] += dictionary[word][2][doc_id][1]
@@ -18,7 +18,7 @@ class ScoringVector:
                     doc_cosine_normalization_denominator[doc_id] = dictionary[word][2][doc_id][1]
                     # now we normalize calculated weight
         for word in dictionary.keys():
-            for doc_id in dictionary[word][1].keys():
+            for doc_id in dictionary[word][2].keys():
                 dictionary[word][2][doc_id][1] = dictionary[word][2][doc_id][1] / doc_cosine_normalization_denominator[doc_id]
 
     def __document_tf_idf_calculator(self, term: str, doc_id: str, documents_length: int, dictionary: dict):

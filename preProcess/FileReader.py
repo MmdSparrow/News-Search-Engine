@@ -2,7 +2,7 @@ import json
 
 
 class FileReader:
-    DEFAULT_PATH = '../data/IR_data_news_12k.json'
+    DEFAULT_PATH = './data/IR_data_news_12k.json'
 
     def __init__(self):
         pass

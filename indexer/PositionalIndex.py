@@ -1,6 +1,6 @@
-from LinguisticModule import LinguisticModule
+from indexer.LinguisticModule import LinguisticModule
 from preProcess.PreProcessor import PreProcessor
-from Tokenizer import Tokenizer
+from indexer.Tokenizer import Tokenizer
 
 
 class PositionalIndex:
