@@ -40,8 +40,10 @@ class ScoringVector:
         query_tf_idf = {}
         query_cosine_normalization_denominator = 0
         for word in query_word_frequency_dict.keys():
-            query_tf_idf[word] = (1 + math.log(query_word_frequency_dict[word], 10)) * math.log(documents_length / dictionary[word][1], 10)
-            query_cosine_normalization_denominator += query_tf_idf[word]
+            # we have to check it is  exist in dictionary
+            if dictionary.keys().__contains__(word):
+                query_tf_idf[word] = (1 + math.log(query_word_frequency_dict[word], 10)) * math.log(documents_length / dictionary[word][1], 10)
+                query_cosine_normalization_denominator += query_tf_idf[word]
         for word in query_tf_idf.keys():
             query_tf_idf[word] = query_tf_idf[word] / query_cosine_normalization_denominator
         return query_tf_idf

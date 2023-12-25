@@ -8,19 +8,12 @@ class IRSystem:
         self.K = 3
 
     def handler(self):
-        query = self.__interface()
-        self.__backend(query)
+        positional_index, scoring_vector = self.__run_IR_system()
+        while True:
+            query = self.__interface()
+            self.__search(query, positional_index, scoring_vector)
 
-    def __backend(self, query):
-        # phase 1: preprocessing and create positional index
-        positional_index = PositionalIndex()
-        positional_index.handler()
-
-        # phase 2: scoring
-        scoring_vector = ScoringVector()
-        scoring_vector.create(positional_index.document_length, positional_index.dictionary)
-
-        # return answer...
+    def __search(self, query, positional_index, scoring_vector):
         doc_id_list = self.__find_k_most_similar_documents(query, positional_index.documents_title_url_dict.keys(), positional_index.document_length, positional_index.dictionary,
                                                            scoring_vector)
         for doc_id in range(len(doc_id_list)):
@@ -28,6 +21,16 @@ class IRSystem:
             print('doc title: ' + str(doc_id_list[doc_id]))
             print('doc url: ' + str(doc_id_list[doc_id]))
             print('')
+
+    def __run_IR_system(self):
+        # phase 1: preprocessing and create positional index
+        positional_index = PositionalIndex()
+        positional_index.handler()
+
+        # phase 2: scoring
+        scoring_vector = ScoringVector()
+        scoring_vector.create(positional_index.document_length, positional_index.dictionary)
+        return positional_index, scoring_vector
 
     def __interface(self):
         print("please enter your query:")
