@@ -43,14 +43,42 @@
 
 # print(test_tuple.)
 
-dict = {
-    "1": 10000,
-    "2": 2,
-    "3": 3,
-    "70": 400,
-    "1000": 5,
-    "100": [12312312],
-    "13": [1231213312],
-}
+# dict = {
+#     "1": 10000,
+#     "2": 2,
+#     "3": 3,
+#     "70": 400,
+#     "1000": 5,
+#     "100": [12312312],
+#     "13": [1231213312],
+# }
+#
+# print(dict.keys())
+#
+# from parsivar.stemmer import FindStems
+#
+#
+# def stem(word, word_pos=None):
+#     return FindStems().convert_to_stem(word, word_pos)
+#
+# print(stem('می خواهد'))
+# print(stem('میخواهد'))
+# print(stem('میخواهد برود'))
 
-print(dict.keys())
+
+A = ['1', 2, 'a']
+B = ['1', 2]
+
+
+def common_member(a, b):
+    a_set = set(a)
+    b_set = set(b)
+
+    # check length
+    if len(a_set.intersection(b_set)) > 0:
+        return (a_set.intersection(b_set))
+    else:
+        return ("no common elements")
+
+
+print(common_member(A, B))
