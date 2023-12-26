@@ -1,7 +1,7 @@
 import heapq
-from indexer.PositionalIndex import PositionalIndex
+from index.PositionalIndex import PositionalIndex
 from scoring.ScoringVector import ScoringVector
-from chmpionsLists.ChampionsLists import ChampionsLists
+from chmpionsIndex.ChampionsLists import ChampionsLists
 
 
 class IRSystem:

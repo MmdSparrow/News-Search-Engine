@@ -1,4 +1,4 @@
-from indexer.PriorityQueueWithFixedLength import PriorityQueueWithFixedLength
+from index.PriorityQueueWithFixedLength import PriorityQueueWithFixedLength
 
 
 class Tokenizer:

@@ -1,5 +1,5 @@
-from indexer.PriorityQueueWithFixedLength import PriorityQueueWithFixedLength
-from indexer.CustomStemmer import CustomStemmer
+from index.PriorityQueueWithFixedLength import PriorityQueueWithFixedLength
+from index.CustomStemmer import CustomStemmer
 
 
 class LinguisticModule:

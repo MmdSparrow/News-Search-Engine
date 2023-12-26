@@ -1,6 +1,6 @@
 import math
 from preProcess.PreProcessor import PreProcessor
-from indexer.CustomStemmer import CustomStemmer
+from index.CustomStemmer import CustomStemmer
 
 
 class ScoringVector:
