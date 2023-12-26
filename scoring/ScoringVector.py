@@ -1,5 +1,6 @@
-from preProcess.PreProcessor import PreProcessor
 import math
+from preProcess.PreProcessor import PreProcessor
+from indexer.CustomStemmer import CustomStemmer
 
 
 class ScoringVector:
@@ -49,11 +50,13 @@ class ScoringVector:
         return query_tf_idf
 
     def __word_frequency_in_query_calculator(self, query: str):
+        customStemmer = CustomStemmer()
         word_frequency = {}
         word = ''
         for char in query.strip():
             if char == ' ' or char == '\t' or char == '\n':
                 word = word.strip()
+                word = customStemmer.stem(word)
                 if word != '':
                     # if word already is in word_frequency
                     if word_frequency.keys().__contains__(word):
@@ -64,7 +67,9 @@ class ScoringVector:
             else:
                 word += char
 
-        if word.strip() != '':
+        word = word.strip()
+        word = customStemmer.stem(word)
+        if word != '':
             if word_frequency.keys().__contains__(word):
                 word_frequency[word] += 1
             else:

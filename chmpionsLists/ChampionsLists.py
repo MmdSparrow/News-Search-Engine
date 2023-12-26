@@ -1,5 +1,7 @@
 import heapq
 from scoring.ScoringVector import ScoringVector
+from preProcess.PreProcessor import PreProcessor
+from indexer.CustomStemmer import CustomStemmer
 
 
 class ChampionsLists:
@@ -12,8 +14,13 @@ class ChampionsLists:
             self.champions_lists[word] = self.__find_k_most_similar_documents(word, documents_id, documents_length, dictionary, scoring_vector)
 
     def search_query_in_champions_list(self, query: str):
-        # todo: normalize query
-        # todo: stem query
+        # normalize query
+        preprocessor = PreProcessor()
+        query = preprocessor.query_preprocessor_handler(query)
+
+        # tokenize and stemming query
+
+
         intersect_list = self.champions_lists[kalamat_query[0]]
         if len(intersect_list) == 0:
             return []
@@ -58,3 +65,32 @@ class ChampionsLists:
             result.append(heapq.heappop(pq)[1])
 
         return result
+
+
+    def __word_frequency_in_query_calculator(self, query: str):
+        customStemmer = CustomStemmer()
+        word_frequency = {}
+        word = ''
+        for char in query.strip():
+            if char == ' ' or char == '\t' or char == '\n':
+                word = word.strip()
+                word = customStemmer.stem(word)
+                if word != '':
+                    # if word already is in word_frequency
+                    if word_frequency.keys().__contains__(word):
+                        word_frequency[word] += 1
+                    else:
+                        word_frequency[word] = 1
+                    word = ''
+            else:
+                word += char
+
+        word = word.strip()
+        word = customStemmer.stem(word)
+        if word != '':
+            if word_frequency.keys().__contains__(word):
+                word_frequency[word] += 1
+            else:
+                word_frequency[word] = 1
+
+        return word_frequency
