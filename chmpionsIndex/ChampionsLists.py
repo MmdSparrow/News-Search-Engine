@@ -6,14 +6,12 @@ from index.CustomStemmer import CustomStemmer
 
 class ChampionsLists:
     def __init__(self):
-        self.K = 3
+        self.K = 5
         # [collection term frequency, document frequency (df_t), list of doc id]
         # [collection term frequency, document frequency (df_t), {doc_id: [document term frequency, tf-idf]}]
         self.champions_dict = {}
 
-        # todo: not here but. iterate positional index dict and fill champion dict
-
-    def create_champions_lists_for_all_word(self, documents_id: list, documents_length: int, dictionary: dict, scoring_vector: ScoringVector):
+    def create(self, documents_id: list, documents_length: int, dictionary: dict, scoring_vector: ScoringVector):
         champions_lists = {}
         for word in dictionary.keys():
             champions_lists[word] = self.__find_k_most_similar_documents(word, documents_id, documents_length, dictionary, scoring_vector)
@@ -45,8 +43,7 @@ class ChampionsLists:
                 # heapq sort tuple based on first element of tuple
                 docId_similarity_list.append((similarity, doc_id))
                 docId_similarity_size += 1
-        self.__find_k_largest_element(docId_similarity_list, docId_similarity_size, self.K)
-        return docId_similarity_list
+        return self.__find_k_largest_element(docId_similarity_list, docId_similarity_size, self.K)
 
     def __find_k_largest_element(self, array: list, array_size: int, k: int) -> list[str]:
         result = []

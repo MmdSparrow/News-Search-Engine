@@ -15,7 +15,7 @@ class PositionalIndex:
 
     # this method sort indexes
 
-    def handler(self):
+    def create(self):
         # pre process documents
         preProcess = PreProcessor()
         self.document_length, document_content, self.documents_title_url_dict = preProcess.document_preprocessor_handler()
@@ -29,9 +29,9 @@ class PositionalIndex:
         linguistic_module.delete_50_most_repeated_words(word_frequency_dict)
 
         # stemming was implemented in index creation phase
-        self.__create(stream_token, word_frequency_dict, linguistic_module.stemmer)
+        self.__create_dict(stream_token, word_frequency_dict, linguistic_module.stemmer)
 
-    def __create(self, stream_token, word_frequency_dict, stemmer):
+    def __create_dict(self, stream_token, word_frequency_dict, stemmer):
         for word, doc_id, position in stream_token:
             if word_frequency_dict.keys().__contains__(word):
                 word_new = stemmer.stem(word)
@@ -55,5 +55,5 @@ class PositionalIndex:
 
 # test
 positional_index = PositionalIndex()
-positional_index.handler()
+positional_index.create()
 print(positional_index.dictionary)

@@ -1,4 +1,5 @@
 import heapq
+import pickle
 from index.PositionalIndex import PositionalIndex
 from scoring.ScoringVector import ScoringVector
 from chmpionsIndex.ChampionsLists import ChampionsLists
@@ -7,9 +8,13 @@ from chmpionsIndex.ChampionsLists import ChampionsLists
 class IRSystem:
     def __init__(self):
         self.K = 4
+        self.DATASTORE_PATH = 'datastore/'
 
     def handler(self):
-        positional_index, scoring_vector, champions_list = self.__run_IR_system()
+        # for first time
+        positional_index, scoring_vector, champions_list = self.__run_IR_system_by_creating()
+        # OW
+        # positional_index, scoring_vector, champions_list = self.__run_IR_system_by_loading()
         while True:
             query = self.__interface()
             self.__search(query, positional_index, scoring_vector, champions_list)
@@ -30,18 +35,49 @@ class IRSystem:
                 print('doc url: ' + str(doc_id_list[doc_id]))
                 print('')
 
-    def __run_IR_system(self):
+    def __run_IR_system_by_creating(self):
         # phase 1: preprocessing and create positional index
         positional_index = PositionalIndex()
-        positional_index.handler()
+        positional_index.create()
 
         # phase 2: scoring
         scoring_vector = ScoringVector()
         scoring_vector.create(positional_index.document_length, positional_index.dictionary)
 
+        # phase 3: champion list
         champions_lists = ChampionsLists()
-        champions_lists.create_champions_lists_for_all_word(positional_index.documents_title_url_dict.keys(), positional_index.document_length, positional_index.dictionary,
-                                                            scoring_vector)
+        champions_lists.create(positional_index.documents_title_url_dict.keys(), positional_index.document_length, positional_index.dictionary, scoring_vector)
+
+        # store these three objects
+        file_positional_index = open(self.DATASTORE_PATH + 'positional_index', 'wb')
+        pickle.dump(positional_index, file_positional_index)
+        file_positional_index.close()
+
+        file_scoring_vector = open(self.DATASTORE_PATH + 'scoring_vector', 'wb')
+        pickle.dump(scoring_vector, file_scoring_vector)
+        file_scoring_vector.close()
+
+        file_champions_lists = open(self.DATASTORE_PATH + 'champion_list', 'wb')
+        pickle.dump(champions_lists, file_champions_lists)
+        file_champions_lists.close()
+
+        return positional_index, scoring_vector, champions_lists
+
+    def __run_IR_system_by_loading(self):
+        # phase 1: preprocessing and create positional index
+        file_positional_index = open(self.DATASTORE_PATH + 'positional_index', 'rb')
+        positional_index = pickle.load(file_positional_index)
+        file_positional_index.close()
+
+        # phase 2: scoring
+        file_scoring_vector = open(self.DATASTORE_PATH + 'scoring_vector', 'rb')
+        scoring_vector = pickle.load(file_scoring_vector)
+        file_scoring_vector.close()
+
+        # phase 3: champion list
+        champions_lists_vector = open(self.DATASTORE_PATH + 'champion_list', 'rb')
+        champions_lists = pickle.load(champions_lists_vector)
+        champions_lists_vector.close()
 
         return positional_index, scoring_vector, champions_lists
 
