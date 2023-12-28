@@ -12,3 +12,9 @@ class Index:
 
     def __repr__(self):
         return self.__str__()
+
+    def is_contains_doc_id(self, doc_id):
+        for postings in self.postings_list:
+            if postings.doc_id == doc_id:
+                return True
+        return False
