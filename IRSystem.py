@@ -11,6 +11,8 @@ class IRSystem:
         self.DATASTORE_PATH = 'datastore/'
 
     def handler(self):
+        # starting......
+        print("starting.....................................................................")
         # for first time
         positional_index, scoring_vector, champions_list = self.__run_IR_system_by_creating()
         # OW
@@ -41,27 +43,33 @@ class IRSystem:
         # phase 1: preprocessing and create positional index
         positional_index = PositionalIndex()
         positional_index.create()
+        print("creating index.....................................................................done")
 
         # phase 2: scoring
         scoring_vector = ScoringVector()
         scoring_vector.create(positional_index.document_length, positional_index.dictionary)
+        print("creating vector space.....................................................................done")
 
         # phase 3: champion list
         champions_lists = ChampionsLists()
         champions_lists.create(positional_index.documents_title_url_dict.keys(), positional_index.document_length, positional_index.dictionary, scoring_vector)
+        print("creating champion list.....................................................................done")
 
         # store these three objects
         file_positional_index = open(self.DATASTORE_PATH + 'positional_index', 'wb')
         pickle.dump(positional_index, file_positional_index)
         file_positional_index.close()
+        print("storing index.....................................................................done")
 
         file_scoring_vector = open(self.DATASTORE_PATH + 'scoring_vector', 'wb')
         pickle.dump(scoring_vector, file_scoring_vector)
         file_scoring_vector.close()
+        print("storing vector space.....................................................................done")
 
         file_champions_lists = open(self.DATASTORE_PATH + 'champion_list', 'wb')
         pickle.dump(champions_lists, file_champions_lists)
         file_champions_lists.close()
+        print("storing champion list.....................................................................done")
 
         return positional_index, scoring_vector, champions_lists
 

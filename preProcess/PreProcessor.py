@@ -10,10 +10,12 @@ class PreProcessor:
         # read
         fileReader = FileReader()
         documents_length, documents_content, documents_title_url_dict = fileReader.read_file()
+        print("reading file.....................................................................done")
 
         # normalize documents
         normalizer = Normalizer()
         normalizer.normalize_document(documents_content, documents_length)
+        print("normalization.....................................................................done")
 
         return documents_length, documents_content, documents_title_url_dict
 

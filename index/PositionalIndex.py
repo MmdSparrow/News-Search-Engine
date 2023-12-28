@@ -19,14 +19,17 @@ class PositionalIndex:
         # pre process documents
         preProcess = PreProcessor()
         self.document_length, document_content, self.documents_title_url_dict = preProcess.document_preprocessor_handler()
+        print("pre processing.....................................................................done")
 
         # create index
         tokenizer = Tokenizer()
         linguistic_module = LinguisticModule()
 
         stream_token, word_frequency_dict = tokenizer.tokenize_document(document_content, self.document_length, linguistic_module.most_repeated_word)
+        print("tokenizing.....................................................................done")
 
         linguistic_module.delete_50_most_repeated_words(word_frequency_dict)
+        print("delete 50 most repeated.....................................................................done")
 
         # stemming was implemented in index creation phase
         self.__create_dict(stream_token, word_frequency_dict, linguistic_module.stemmer)
@@ -54,6 +57,6 @@ class PositionalIndex:
         self.dictionary[word][2][doc_id][2].append(position)  # add position
 
 # test
-positional_index = PositionalIndex()
-positional_index.create()
-print(positional_index.dictionary)
+# positional_index = PositionalIndex()
+# positional_index.create()
+# print(positional_index.dictionary)
