@@ -65,20 +65,27 @@
 # print(stem('میخواهد'))
 # print(stem('میخواهد برود'))
 
+#
+# A = ['1', 2, 'a']
+# B = ['1', 2]
+#
+# def common_member(a, b):
+#     a_set = set(a)
+#     b_set = set(b)
+#
+#     # check length
+#     if len(a_set.intersection(b_set)) > 0:
+#         return (a_set.intersection(b_set))
+#     else:
+#         return ("no common elements")
+#
+#
+# print(common_member(A, B))
 
-A = ['1', 2, 'a']
-B = ['1', 2]
+dictionary={}
 
+dictionary['a']=[0]
+dictionary['a'].append(1)
+dictionary['a'].append(2)
 
-def common_member(a, b):
-    a_set = set(a)
-    b_set = set(b)
-
-    # check length
-    if len(a_set.intersection(b_set)) > 0:
-        return (a_set.intersection(b_set))
-    else:
-        return ("no common elements")
-
-
-print(common_member(A, B))
+print('a' in dictionary)

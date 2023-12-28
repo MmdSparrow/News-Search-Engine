@@ -1,5 +1,6 @@
 import heapq
 import pickle
+import datetime
 from index.PositionalIndex import PositionalIndex
 from scoring.ScoringVector import ScoringVector
 from chmpionsIndex.ChampionsLists import ChampionsLists
@@ -41,35 +42,53 @@ class IRSystem:
 
     def __run_IR_system_by_creating(self):
         # phase 1: preprocessing and create positional index
+        start_time = datetime.datetime.now()
         positional_index = PositionalIndex()
         positional_index.create()
         print("creating index.....................................................................done")
+        end_time = datetime.datetime.now()
+        print(end_time-start_time)
 
         # phase 2: scoring
+        start_time = datetime.datetime.now()
         scoring_vector = ScoringVector()
         scoring_vector.create(positional_index.document_length, positional_index.dictionary)
         print("creating vector space.....................................................................done")
+        end_time = datetime.datetime.now()
+        print(end_time-start_time)
 
         # phase 3: champion list
+        start_time = datetime.datetime.now()
         champions_lists = ChampionsLists()
         champions_lists.create(positional_index.documents_title_url_dict.keys(), positional_index.document_length, positional_index.dictionary, scoring_vector)
         print("creating champion list.....................................................................done")
+        end_time = datetime.datetime.now()
+        print(end_time-start_time)
 
         # store these three objects
+        start_time = datetime.datetime.now()
         file_positional_index = open(self.DATASTORE_PATH + 'positional_index', 'wb')
         pickle.dump(positional_index, file_positional_index)
         file_positional_index.close()
         print("storing index.....................................................................done")
+        end_time = datetime.datetime.now()
+        print(end_time-start_time)
 
+        start_time = datetime.datetime.now()
         file_scoring_vector = open(self.DATASTORE_PATH + 'scoring_vector', 'wb')
         pickle.dump(scoring_vector, file_scoring_vector)
         file_scoring_vector.close()
         print("storing vector space.....................................................................done")
+        end_time = datetime.datetime.now()
+        print(end_time-start_time)
 
+        start_time = datetime.datetime.now()
         file_champions_lists = open(self.DATASTORE_PATH + 'champion_list', 'wb')
         pickle.dump(champions_lists, file_champions_lists)
         file_champions_lists.close()
         print("storing champion list.....................................................................done")
+        end_time = datetime.datetime.now()
+        print(end_time-start_time)
 
         return positional_index, scoring_vector, champions_lists
 

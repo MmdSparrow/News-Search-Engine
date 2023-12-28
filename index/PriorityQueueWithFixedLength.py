@@ -13,7 +13,7 @@ class PriorityQueueWithFixedLength:
         # if word was not in queue
         else:
             if len(self.queue) == self.LENGTH:
-                self.queue.sort(key=self.sort_key)
+                self.queue.sort(key=self.__sort_key)
                 self.queue[0] = [word, frequency]
             else: # if was smaller than LENGTH
                 self.queue.append([word, frequency])
@@ -24,5 +24,5 @@ class PriorityQueueWithFixedLength:
                 return i
         return -1
 
-    def sort_key(self, element):
+    def __sort_key(self, element):
         return element[1]
