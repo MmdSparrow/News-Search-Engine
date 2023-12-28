@@ -11,25 +11,28 @@ class ScoringVector:
         # doc id, sqrt(w1^2+w2^2+....)
         doc_cosine_normalization_denominator = {}
         for word in dictionary.keys():
-            for doc_id in dictionary[word][2].keys():
-                self.__document_tf_idf_calculator(word, doc_id, documents_length, dictionary)
-                if doc_cosine_normalization_denominator.keys().__contains__(doc_id):
-                    doc_cosine_normalization_denominator[doc_id] += dictionary[word][2][doc_id][1]
+            for i in range(len(dictionary[word].postings_list)):
+                doc_id = dictionary[word].postings_list[i].doc_id
+                self.__document_tf_idf_calculator(word, i, documents_length, dictionary)
+                if doc_id in doc_cosine_normalization_denominator:
+                    doc_cosine_normalization_denominator[doc_id] += dictionary[word].postings_list[i].tf_idf
                 else:
-                    doc_cosine_normalization_denominator[doc_id] = dictionary[word][2][doc_id][1]
+                    doc_cosine_normalization_denominator[doc_id] = dictionary[word].postings_list[i].tf_idf
                     # now we normalize calculated weight
-        for word in dictionary.keys():
-            for doc_id in dictionary[word][2].keys():
-                dictionary[word][2][doc_id][1] = dictionary[word][2][doc_id][1] / doc_cosine_normalization_denominator[doc_id]
+        for word in dictionary:
+            for i in range(len(dictionary[word].postings_list)):
+                doc_id = dictionary[word].postings_list[i].doc_id
+                dictionary[word].postiongs_list[i] = dictionary[word].postiongs_list[i] / doc_cosine_normalization_denominator[doc_id]
 
-    def __document_tf_idf_calculator(self, term: str, doc_id: str, documents_length: int, dictionary: dict):
-        dictionary[term][2][doc_id][1] = (1 + math.log(dictionary[term][2][doc_id][0], 10)) * math.log(documents_length / dictionary[term][1], 10)
+    def __document_tf_idf_calculator(self, term: str, postings_list_ind: int, documents_length: int, dictionary: dict):
+        dictionary[term].postings_list[postings_list_ind].tf_idf = (1 + math.log(dictionary[term].postings_list[postings_list_ind].term_frequency, 10)) * math.log(
+            documents_length / dictionary[term].doc_frequency, 10)
 
     def similarity_query_and_doc(self, query, doc_id: str, documents_length: int, dictionary: dict, is_champion_list=False, main_dict=None):
         similarity = 0
         query_tf_idf = self.__query_tf_idf_calculator(query, documents_length, dictionary, is_champion_list, main_dict)
-        for word in query_tf_idf.keys():
-            if dictionary.keys().__contains__(word) and dictionary[word][2].__contains__(doc_id):
+        for word in query_tf_idf:
+            if word in dictionary and dictionary[word][2].__contains__(doc_id):
                 similarity += query_tf_idf[word] * dictionary[word][2][doc_id][1]
         return similarity
 

@@ -88,4 +88,5 @@ dictionary['a']=[0]
 dictionary['a'].append(1)
 dictionary['a'].append(2)
 
-print('a' in dictionary)
+for i in dictionary:
+    print(i)
