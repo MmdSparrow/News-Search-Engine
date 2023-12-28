@@ -13,32 +13,32 @@ class ChampionsLists:
 
     def create(self, documents_id: list, documents_length: int, dictionary: dict, scoring_vector: ScoringVector):
         champions_lists = {}
+
         for word in dictionary.keys():
-            champions_lists[word] = self.__find_k_most_similar_documents(word, documents_id, documents_length, dictionary, scoring_vector)
+            champions_lists[word] = self.__find_k_most_similar_documents(word, documents_id, documents_length, dictionary, scoring_vector, main_dict=dictionary)
         for word in champions_lists.keys():
-            self.champions_dict[word] = []
+            self.champions_dict[word] = [0, 0, {}]
             self.champions_dict[word][0] = dictionary[word][0]
             self.champions_dict[word][1] = dictionary[word][1]
-            self.champions_dict[word][2] = {}
             for doc_id in champions_lists[word]:
-                self.champions_dict[word][2][doc_id] = []
+                self.champions_dict[word][2][doc_id] = [0, 0]
                 self.champions_dict[word][2][doc_id][0] = dictionary[word][2][doc_id][0]
                 self.champions_dict[word][2][doc_id][1] = dictionary[word][2][doc_id][1]
 
-    def search_query_in_champions_list(self, query: str, answer_dict, document_length, scoring_vector):
+    def search_query_in_champions_list(self, query: str, answer_dict, document_length, scoring_vector, main_dict):
         # normalize query
         preprocessor = PreProcessor()
         query = preprocessor.query_preprocessor_handler(query)
 
         # find k most similar in champion dict
-        doc_id_list = self.__find_k_most_similar_documents(query, answer_dict.keys(), document_length, self.champions_dict, scoring_vector)
+        doc_id_list = self.__find_k_most_similar_documents(query, answer_dict.keys(), document_length, self.champions_dict, scoring_vector, main_dict)
         return doc_id_list
 
-    def __find_k_most_similar_documents(self, query: str, documents_id: list, documents_length: int, dictionary: dict, scoring_vector: ScoringVector):
+    def __find_k_most_similar_documents(self, query: str, documents_id: list, documents_length: int, dictionary: dict, scoring_vector: ScoringVector, main_dict=None):
         docId_similarity_list = []
         docId_similarity_size = 0
         for doc_id in documents_id:
-            similarity = scoring_vector.similarity_query_and_doc(query, doc_id, documents_length, dictionary)
+            similarity = scoring_vector.similarity_query_and_doc(query, doc_id, documents_length, dictionary, True, main_dict)
             if similarity != 0:
                 # heapq sort tuple based on first element of tuple
                 docId_similarity_list.append((similarity, doc_id))

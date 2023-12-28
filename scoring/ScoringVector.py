@@ -25,26 +25,36 @@ class ScoringVector:
     def __document_tf_idf_calculator(self, term: str, doc_id: str, documents_length: int, dictionary: dict):
         dictionary[term][2][doc_id][1] = (1 + math.log(dictionary[term][2][doc_id][0], 10)) * math.log(documents_length / dictionary[term][1], 10)
 
-    def similarity_query_and_doc(self, query, doc_id: str, documents_length: int, dictionary: dict):
+    def similarity_query_and_doc(self, query, doc_id: str, documents_length: int, dictionary: dict, is_champion_list=False, main_dict=None):
         similarity = 0
-        query_tf_idf = self.__query_tf_idf_calculator(query, documents_length, dictionary)
+        query_tf_idf = self.__query_tf_idf_calculator(query, documents_length, dictionary, is_champion_list, main_dict)
         for word in query_tf_idf.keys():
             if dictionary.keys().__contains__(word) and dictionary[word][2].__contains__(doc_id):
                 similarity += query_tf_idf[word] * dictionary[word][2][doc_id][1]
         return similarity
 
-    def __query_tf_idf_calculator(self, query: str, documents_length: int, dictionary: dict) -> dict:
+    def __query_tf_idf_calculator(self, query: str, documents_length: int, dictionary: dict, is_champion_list=False, main_dict=None) -> dict:
         # at first we normalize query
-        preprocessor = PreProcessor()
-        query = preprocessor.query_preprocessor_handler(query)
+        if not is_champion_list:
+            preprocessor = PreProcessor()
+            query = preprocessor.query_preprocessor_handler(query)
         query_word_frequency_dict = self.__word_frequency_in_query_calculator(query)
         query_tf_idf = {}
         query_cosine_normalization_denominator = 0
-        for word in query_word_frequency_dict.keys():
-            # we have to check it is  exist in dictionary
-            if dictionary.keys().__contains__(word):
-                query_tf_idf[word] = (1 + math.log(query_word_frequency_dict[word], 10)) * math.log(documents_length / dictionary[word][1], 10)
-                query_cosine_normalization_denominator += query_tf_idf[word]
+        # chon bayad az ruye main_dict tf_idf champion list ha hesab beshe ama tuye champion_dict por beshe bayad main_dict ro ham dashte bashim
+        if is_champion_list and main_dict is not None:
+            for word in query_word_frequency_dict.keys():
+                # we have to check it is  exist in dictionary
+                if main_dict.keys().__contains__(word):
+                    query_tf_idf[word] = (1 + math.log(query_word_frequency_dict[word], 10)) * math.log((documents_length + 1) / main_dict[word][1], 10)
+                    query_cosine_normalization_denominator += query_tf_idf[word]
+        else:
+            for word in query_word_frequency_dict.keys():
+                # we have to check it is  exist in dictionary
+                if dictionary.keys().__contains__(word):
+                    query_tf_idf[word] = (1 + math.log(query_word_frequency_dict[word], 10)) * math.log((documents_length + 1) / dictionary[word][1], 10)
+                    query_cosine_normalization_denominator += query_tf_idf[word]
+        # cosine normalize
         for word in query_tf_idf.keys():
             query_tf_idf[word] = query_tf_idf[word] / query_cosine_normalization_denominator
         return query_tf_idf
