@@ -37,7 +37,11 @@ class PositionalIndex:
         print("delete 50 most repeated.....................................................................done")
 
     def __create_dict(self, stream_token, stemmer):
+        counter = 0
         for word, doc_id, position in stream_token:
+            counter += 1
+            if counter % 200 == 0:
+                print(f'counter: {counter}')
             word_new = stemmer.stem(word)
             self.__add_to_dictionary_and_postings_list(word_new, doc_id, position)
 
