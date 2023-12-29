@@ -2,6 +2,7 @@ import heapq
 from scoring.ScoringVector import ScoringVector
 from preProcess.PreProcessor import PreProcessor
 from index.CustomStemmer import CustomStemmer
+from index.PriorityQueueWithFixedLength import PriorityQueueWithFixedLength
 
 
 class ChampionsLists:
@@ -11,19 +12,27 @@ class ChampionsLists:
         # [collection term frequency, document frequency (df_t), {doc_id: [document term frequency, tf-idf]}]
         self.champions_dict = {}
 
-    def create(self, documents_id: list, documents_length: int, dictionary: dict, scoring_vector: ScoringVector):
-        champions_lists = {}
-
-        for word in dictionary.keys():
-            champions_lists[word] = self.__find_k_most_similar_documents(word, documents_id, documents_length, dictionary, scoring_vector, main_dict=dictionary)
-        for word in champions_lists.keys():
+    def create(self, dictionary: dict):
+        termp_champion_dict = self.__find_k_most_similar_documents_for_all_terms(dictionary)
+        for word in termp_champion_dict:
             self.champions_dict[word] = [0, 0, {}]
             self.champions_dict[word][0] = dictionary[word][0]
             self.champions_dict[word][1] = dictionary[word][1]
-            for doc_id in champions_lists[word]:
+            for doc_id in termp_champion_dict[word]:
                 self.champions_dict[word][2][doc_id] = [0, 0]
                 self.champions_dict[word][2][doc_id][0] = dictionary[word][2][doc_id][0]
                 self.champions_dict[word][2][doc_id][1] = dictionary[word][2][doc_id][1]
+
+    def __find_k_most_similar_documents_for_all_terms(self, dictionary):
+        termp_champion_dict = {}
+        for term in dictionary:
+            max_list = []
+            max_list_size = 0
+            for doc_id in dictionary[term][2]:
+                max_list.append((dictionary[term][2][doc_id][1], doc_id))
+                max_list_size += 1
+            termp_champion_dict[term] = self.__find_k_largest_element(max_list, max_list_size, self.K)
+        return termp_champion_dict
 
     def search_query_in_champions_list(self, query: str, answer_dict, document_length, scoring_vector, main_dict):
         # normalize query

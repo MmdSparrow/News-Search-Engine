@@ -8,7 +8,7 @@ class LinguisticModule:
         self.stemmer = CustomStemmer()
 
     # def delete_50_most_repeated_words(self, dictionary: dict):
-    #     for i in range(min(self.most_repeated_word.LENGTH, len(dictionary))):
+    #     for i in range(min(self.most_repeated_word.capacity, len(dictionary))):
     #         dictionary.pop(self.most_repeated_word.queue[i][0])
 
     def delete_50_most_repeated_words_stem_remains_from_tokens(self, stream_token):

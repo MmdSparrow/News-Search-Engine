@@ -48,12 +48,12 @@ class PositionalIndex:
             self.__add_to_dictionary_and_postings_list(word, doc_id, position)
 
     def __add_to_dictionary_and_postings_list(self, word: str, doc_id: str, position: int) -> None:
-        if not self.dictionary.keys().__contains__(word):
+        if word not in self.dictionary:
             # [collection term frequency, document frequency (df_t), list of doc id]
             self.dictionary[word] = [0, 0, {}]
         # if dictionary not contain the doc_id:
         # increment df
-        if not self.dictionary[word][2].__contains__(doc_id):
+        if doc_id not in self.dictionary[word][2]:
             self.dictionary[word][1] += 1
             # [document term frequency, tf-idf, positions]
             self.dictionary[word][2][doc_id] = [0, -1, []]

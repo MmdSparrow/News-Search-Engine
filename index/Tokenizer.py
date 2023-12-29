@@ -34,7 +34,7 @@ class Tokenizer:
             priority_queue_with_fixed_length.push(word, word_frequency)
 
     def __update_frequency(self, word: str) -> int:
-        if self.word_frequency_dict.keys().__contains__(word):
+        if word in self.word_frequency_dict:
             self.word_frequency_dict[word] += 1
         else:
             self.word_frequency_dict[word] = 1

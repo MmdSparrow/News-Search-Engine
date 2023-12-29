@@ -11,15 +11,15 @@ class ScoringVector:
         # doc id, sqrt(w1^2+w2^2+....)
         doc_cosine_normalization_denominator = {}
         for word in dictionary.keys():
-            for doc_id in dictionary[word][2].keys():
+            for doc_id in dictionary[word][2]:
                 self.__document_tf_idf_calculator(word, doc_id, documents_length, dictionary)
-                if doc_cosine_normalization_denominator.keys().__contains__(doc_id):
+                if doc_id in doc_cosine_normalization_denominator:
                     doc_cosine_normalization_denominator[doc_id] += dictionary[word][2][doc_id][1]
                 else:
                     doc_cosine_normalization_denominator[doc_id] = dictionary[word][2][doc_id][1]
                     # now we normalize calculated weight
         for word in dictionary.keys():
-            for doc_id in dictionary[word][2].keys():
+            for doc_id in dictionary[word][2]:
                 dictionary[word][2][doc_id][1] = dictionary[word][2][doc_id][1] / doc_cosine_normalization_denominator[doc_id]
 
     def __document_tf_idf_calculator(self, term: str, doc_id: str, documents_length: int, dictionary: dict):
@@ -29,7 +29,7 @@ class ScoringVector:
         similarity = 0
         query_tf_idf = self.__query_tf_idf_calculator(query, documents_length, dictionary, is_champion_list, main_dict)
         for word in query_tf_idf.keys():
-            if dictionary.keys().__contains__(word) and dictionary[word][2].__contains__(doc_id):
+            if word in dictionary and doc_id in dictionary[word][2]:
                 similarity += query_tf_idf[word] * dictionary[word][2][doc_id][1]
         return similarity
 
@@ -45,13 +45,13 @@ class ScoringVector:
         if is_champion_list and main_dict is not None:
             for word in query_word_frequency_dict.keys():
                 # we have to check it is  exist in dictionary
-                if main_dict.keys().__contains__(word):
+                if word in main_dict:
                     query_tf_idf[word] = (1 + math.log(query_word_frequency_dict[word], 10)) * math.log((documents_length + 1) / main_dict[word][1], 10)
                     query_cosine_normalization_denominator += query_tf_idf[word]
         else:
             for word in query_word_frequency_dict.keys():
                 # we have to check it is  exist in dictionary
-                if dictionary.keys().__contains__(word):
+                if word in dictionary:
                     query_tf_idf[word] = (1 + math.log(query_word_frequency_dict[word], 10)) * math.log((documents_length + 1) / dictionary[word][1], 10)
                     query_cosine_normalization_denominator += query_tf_idf[word]
         # cosine normalize
@@ -69,7 +69,7 @@ class ScoringVector:
                 word = customStemmer.stem(word)
                 if word != '':
                     # if word already is in word_frequency
-                    if word_frequency.keys().__contains__(word):
+                    if word in word_frequency:
                         word_frequency[word] += 1
                     else:
                         word_frequency[word] = 1
@@ -80,7 +80,7 @@ class ScoringVector:
         word = word.strip()
         word = customStemmer.stem(word)
         if word != '':
-            if word_frequency.keys().__contains__(word):
+            if word in word_frequency:
                 word_frequency[word] += 1
             else:
                 word_frequency[word] = 1

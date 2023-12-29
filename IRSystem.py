@@ -52,7 +52,7 @@ class IRSystem:
 
         # phase 3: champion list
         champions_lists = ChampionsLists()
-        champions_lists.create(positional_index.documents_title_url_dict.keys(), positional_index.document_length, positional_index.dictionary, scoring_vector)
+        champions_lists.create(positional_index.dictionary)
         print("creating champion list.....................................................................done")
 
         # store these three objects
