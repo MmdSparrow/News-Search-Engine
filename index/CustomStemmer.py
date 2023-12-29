@@ -1,12 +1,14 @@
-from parsivar.stemmer import FindStems
+# from parsivar.stemmer import FindStems
+from hazm.stemmer import Stemmer
+
 
 class CustomStemmer:
     def __init__(self):
         pass
 
-    # def stem(self, word):
-    #     return Stemmer().stem(word)
+    def stem(self, word):
+        return Stemmer().stem(word)
 
     # parsivar
-    def stem(self, word, word_pos=None):
-        return FindStems().convert_to_stem(word, word_pos)
+    # def stem(self, word, word_pos=None):
+    #     return FindStems().convert_to_stem(word, word_pos)

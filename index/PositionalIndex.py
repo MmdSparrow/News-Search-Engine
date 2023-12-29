@@ -27,21 +27,25 @@ class PositionalIndex:
         tokenizer = Tokenizer()
         linguistic_module = LinguisticModule()
 
-        stream_token, word_frequency_dict = tokenizer.tokenize_document(document_content, self.document_length, linguistic_module.most_repeated_word)
+        stream_token = tokenizer.tokenize_document(document_content, self.document_length, linguistic_module.most_repeated_word)
         print(f"tokenizing.....................................................................done")
 
+        start_time = datetime.datetime.now()
         # linguistic_module.delete_50_most_repeated_words(word_frequency_dict)
-        stream_token = linguistic_module.delete_50_most_repeated_words_from_tokens(stream_token)
+        stream_token = linguistic_module.delete_50_most_repeated_words_stem_remains_from_tokens(stream_token)
         print("delete 50 most repeated.....................................................................done")
+        end_time = datetime.datetime.now()
+        print("time elapsed: ", end_time - start_time)
 
+        start_time = datetime.datetime.now()
         # stemming was implemented in index creation phase
-        self.__create_dict(stream_token, word_frequency_dict, linguistic_module.stemmer)
+        self.__create_dict(stream_token)
+        end_time = datetime.datetime.now()
+        print("time elapsed: ", end_time - start_time)
 
-    def __create_dict(self, stream_token, word_frequency_dict, stemmer):
+    def __create_dict(self, stream_token):
         for word, doc_id, position in stream_token:
-            if word not in word_frequency_dict:
-                word_new = stemmer.stem(word)
-                self.__add_to_dictionary_and_postings_list(word_new, doc_id, position)
+            self.__add_to_dictionary_and_postings_list(word, doc_id, position)
 
     def __add_to_dictionary_and_postings_list(self, word: str, doc_id: str, position: int) -> None:
         if not self.dictionary.keys().__contains__(word):
@@ -52,6 +56,7 @@ class PositionalIndex:
         if not self.dictionary[word][2].__contains__(doc_id):
             self.dictionary[word][1] += 1
             # [document term frequency, tf-idf, positions]
+            self.dictionary[word][2][doc_id] = [0, -1, []]
 
         # add to dictionary
         self.dictionary[word][0] += 1  # increment collection frequency of word

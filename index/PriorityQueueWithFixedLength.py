@@ -7,7 +7,7 @@ class PriorityQueueWithFixedLength:
 
     def push(self, word, frequency):
         # if word was in queue update it's frequency
-        index_temp = self.contain(word)
+        index_temp = self.__contain(word)
         if index_temp != -1:
             self.queue[index_temp][1] = frequency
         # if word was not in queue
@@ -18,11 +18,17 @@ class PriorityQueueWithFixedLength:
             else: # if was smaller than LENGTH
                 self.queue.append([word, frequency])
 
-    def contain(self, item):
+    def __contain(self, item):
         for i in range(0, len(self.queue)):
             if self.queue[i][0] == item:
                 return i
         return -1
+
+    def is_contain(self, item):
+        for i in range(0, len(self.queue)):
+            if self.queue[i][0] == item:
+                return True
+        return False
 
     def sort_key(self, element):
         return element[1]

@@ -96,7 +96,7 @@ class Normalizer:
     def __character_delete(self, doc_string):
         # alef keshide bayad character ghablish fathe bashe baadesh alef biad un moghe mishe alef keshide. pas bayad ghabl az hazf fathe hazf shavad!
         CHARACTER_DELETE_KEYS = ['ْ', 'ٌ', 'ٍ', 'ً', 'ُ', 'ِ', 'َ', 'ّ', '!', '>', '<', ',', '،', 'ٰ', '؛', ':', '{',
-                                 '}', '[', ']', ')', '(', '*', ';', '\"', '\'']
+                                 '}', '[', ']', ')', '(', '*', ';', '\"', '\'', '.']
         CHARACTER_DELETE_VALUE = ' '  # space is better than nothing: 'cuase the writing rules may not have been followed correctly (eg. lab lab lab.lab lab lab)
 
         character_delete_item = {}
