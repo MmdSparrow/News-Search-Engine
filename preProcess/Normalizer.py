@@ -10,7 +10,8 @@ class Normalizer:
 
     def normalize_document(self, documents_content: list, documents_content_length: int):
         for i in range(documents_content_length):
-            doc = self.__space_correction(documents_content[i])
+            doc = self.__delete_end_of_content(documents_content[i])
+            doc = self.__space_correction(doc)
             doc = self.__unicode_replacement(doc)
             doc = self.__character_delete(doc)
             doc = self.__english_digit_replacement(doc)
@@ -24,6 +25,10 @@ class Normalizer:
         query = self.__english_digit_replacement(query)
         query = self.__verb_prefix_separation(query)
         return self.__abbreviation_replacement(query)
+
+    def __delete_end_of_content(self, doc_string):
+        # انتهای پیام/
+        return doc_string[0:len(doc_string) - 13]
 
     def __space_correction(self, doc_string: str):
 
@@ -143,8 +148,6 @@ class Normalizer:
         persian_abbreviation_dict['USA'] = 'آمریکا'
         persian_abbreviation_dict['U.S.A'] = 'آمریکا'
         persian_abbreviation_dict['شبا'] = 'شماره حساب بانکی'
-        persian_abbreviation_dict['ره'] = 'رحمت الله علیه'
-        persian_abbreviation_dict['س'] = 'سلام الله علیها'
         persian_abbreviation_dict['ساتا'] = 'سازمان تایمن اجتماعی'
         persian_abbreviation_dict['ساتنا'] = 'سازمان تسویه ناخالص آنی'
         persian_abbreviation_dict['ساجا'] = 'سازمان ارتش جمهوری اسلامی'
@@ -159,3 +162,5 @@ class Normalizer:
         persian_abbreviation_pattern = re.compile("|".join(persian_abbreviation_dict.keys()))
 
         return persian_abbreviation_pattern.sub(lambda m: persian_abbreviation_dict[re.escape(m.group(0))], doc_string)
+
+

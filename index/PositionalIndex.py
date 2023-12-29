@@ -1,6 +1,9 @@
 from index.LinguisticModule import LinguisticModule
 from preProcess.PreProcessor import PreProcessor
 from index.Tokenizer import Tokenizer
+from index.Posting import Posting
+from index.TermValue import TermValue
+import datetime
 
 
 class PositionalIndex:
@@ -8,7 +11,6 @@ class PositionalIndex:
         self.dictionary = {}
         self.document_length = 0
         self.documents_title_url_dict = {}
-
         # example
         # self.dictionary['w1'] = (0, dic)
         # self.dictionary['w1'][1][0][1].append()
@@ -26,9 +28,10 @@ class PositionalIndex:
         linguistic_module = LinguisticModule()
 
         stream_token, word_frequency_dict = tokenizer.tokenize_document(document_content, self.document_length, linguistic_module.most_repeated_word)
-        print("tokenizing.....................................................................done")
+        print(f"tokenizing.....................................................................done")
 
-        linguistic_module.delete_50_most_repeated_words(word_frequency_dict)
+        # linguistic_module.delete_50_most_repeated_words(word_frequency_dict)
+        stream_token = linguistic_module.delete_50_most_repeated_words_from_tokens(stream_token)
         print("delete 50 most repeated.....................................................................done")
 
         # stemming was implemented in index creation phase
@@ -36,7 +39,7 @@ class PositionalIndex:
 
     def __create_dict(self, stream_token, word_frequency_dict, stemmer):
         for word, doc_id, position in stream_token:
-            if word_frequency_dict.keys().__contains__(word):
+            if word not in word_frequency_dict:
                 word_new = stemmer.stem(word)
                 self.__add_to_dictionary_and_postings_list(word_new, doc_id, position)
 
@@ -49,7 +52,6 @@ class PositionalIndex:
         if not self.dictionary[word][2].__contains__(doc_id):
             self.dictionary[word][1] += 1
             # [document term frequency, tf-idf, positions]
-            self.dictionary[word][2][doc_id] = [0, -1, []]
 
         # add to dictionary
         self.dictionary[word][0] += 1  # increment collection frequency of word
