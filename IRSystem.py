@@ -47,7 +47,7 @@ class IRSystem:
         positional_index.create()
         print("creating index.....................................................................done")
         end_time = datetime.datetime.now()
-        print(end_time-start_time)
+        print(end_time - start_time)
 
         # phase 2: scoring
         start_time = datetime.datetime.now()
@@ -55,7 +55,7 @@ class IRSystem:
         scoring_vector.create(positional_index.document_length, positional_index.dictionary)
         print("creating vector space.....................................................................done")
         end_time = datetime.datetime.now()
-        print(end_time-start_time)
+        print(end_time - start_time)
 
         # phase 3: champion list
         start_time = datetime.datetime.now()
@@ -63,7 +63,7 @@ class IRSystem:
         champions_lists.create(positional_index.documents_title_url_dict.keys(), positional_index.document_length, positional_index.dictionary, scoring_vector)
         print("creating champion list.....................................................................done")
         end_time = datetime.datetime.now()
-        print(end_time-start_time)
+        print(end_time - start_time)
 
         # store these three objects
         start_time = datetime.datetime.now()
@@ -72,7 +72,7 @@ class IRSystem:
         file_positional_index.close()
         print("storing index.....................................................................done")
         end_time = datetime.datetime.now()
-        print(end_time-start_time)
+        print(end_time - start_time)
 
         start_time = datetime.datetime.now()
         file_scoring_vector = open(self.DATASTORE_PATH + 'scoring_vector', 'wb')
@@ -80,7 +80,7 @@ class IRSystem:
         file_scoring_vector.close()
         print("storing vector space.....................................................................done")
         end_time = datetime.datetime.now()
-        print(end_time-start_time)
+        print(end_time - start_time)
 
         start_time = datetime.datetime.now()
         file_champions_lists = open(self.DATASTORE_PATH + 'champion_list', 'wb')
@@ -88,7 +88,7 @@ class IRSystem:
         file_champions_lists.close()
         print("storing champion list.....................................................................done")
         end_time = datetime.datetime.now()
-        print(end_time-start_time)
+        print(end_time - start_time)
 
         return positional_index, scoring_vector, champions_lists
 

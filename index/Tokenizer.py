@@ -6,10 +6,11 @@ class Tokenizer:
         self.stream_token = []
         self.word_frequency_dict = {}
 
-    def tokenize_document(self, document_content: list[str], document_len: int, priority_queue_with_fixed_length: PriorityQueueWithFixedLength) -> (list[tuple[str, str, int]], dict):
+    def tokenize_document(self, document_content: list[str], document_len: int, priority_queue_with_fixed_length: PriorityQueueWithFixedLength) -> (
+            list[tuple[str, str, int]], dict):
         for i in range(document_len):
             self.__doc_tokenize(str(i), document_content[i], priority_queue_with_fixed_length)
-        return self.stream_token
+        return self.stream_token, self.word_frequency_dict
 
     def __doc_tokenize(self, doc_id: str, doc_string: str, priority_queue_with_fixed_length: PriorityQueueWithFixedLength) -> None:
         word = ''

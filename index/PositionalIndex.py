@@ -3,6 +3,8 @@ from preProcess.PreProcessor import PreProcessor
 from index.Tokenizer import Tokenizer
 from index.Index import Index
 from index.Postings import Postings
+from index.PriorityQueueWithFixedLength import PriorityQueueWithFixedLength
+from index.CustomStemmer import CustomStemmer
 
 
 class PositionalIndex:
@@ -10,6 +12,7 @@ class PositionalIndex:
         self.dictionary = {}
         self.document_length = 0
         self.documents_title_url_dict = {}
+
         # example
         # self.dictionary['w1'] = (0, dic)
         # self.dictionary['w1'][1][0][1].append()
@@ -26,18 +29,19 @@ class PositionalIndex:
         tokenizer = Tokenizer()
         linguistic_module = LinguisticModule()
 
-        stream_token = tokenizer.tokenize_document(document_content, self.document_length, linguistic_module.most_repeated_word)
+        stream_token, word_frequency_dict = tokenizer.tokenize_document(document_content, self.document_length, linguistic_module.most_repeated_word)
         print("tokenizing.....................................................................done")
 
         # stemming was implemented in index creation phase
-        self.__create_dict(stream_token)
+        self.__create_dict(stream_token, linguistic_module.stemmer, linguistic_module.most_repeated_word)
         print("creating dictionary.....................................................................done")
-
-        # delete most frequent token
-        linguistic_module.delete_50_most_repeated_words(self.dictionary)
         print("delete 50 most repeated.....................................................................done")
 
-    def __create_dict(self, stream_token):
+        # delete most frequent token
+        # linguistic_module.delete_50_most_repeated_words(self.dictionary)
+        # print("delete 50 most repeated.....................................................................done")
+
+    def __create_dict(self, stream_token, stemmer: CustomStemmer, most_repeated_word_queue: PriorityQueueWithFixedLength):
         # create the indices
         df, tf, i = 0, 0, 0
         while i < len(stream_token):
@@ -50,7 +54,8 @@ class PositionalIndex:
                     postings.add_posting(stream_token[i][2])
                     i += 1
                 index.add_postings(postings)
-            self.dictionary[last_term] = index
+            if most_repeated_word_queue.contain(last_term):
+                self.dictionary[stemmer.stem(last_term)] = index
 
 # test
 # positional_index = PositionalIndex()

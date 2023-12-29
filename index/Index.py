@@ -18,3 +18,10 @@ class Index:
             if postings.doc_id == doc_id:
                 return True
         return False
+
+    def get_postings_by_doc_id(self, doc_id):
+        for postings in self.postings_list:
+            if postings.doc_id == doc_id:
+                return postings
+        return None
+

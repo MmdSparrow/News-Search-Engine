@@ -10,34 +10,38 @@ class ScoringVector:
     def create(self, documents_length: int, dictionary: dict):
         # doc id, sqrt(w1^2+w2^2+....)
         doc_cosine_normalization_denominator = {}
-        for word in dictionary.keys():
-            for i in range(len(dictionary[word].postings_list)):
-                doc_id = dictionary[word].postings_list[i].doc_id
-                self.__document_tf_idf_calculator(word, i, documents_length, dictionary)
-                if doc_id in doc_cosine_normalization_denominator:
-                    doc_cosine_normalization_denominator[doc_id] += dictionary[word].postings_list[i].tf_idf
-                else:
-                    doc_cosine_normalization_denominator[doc_id] = dictionary[word].postings_list[i].tf_idf
-                    # now we normalize calculated weight
         for word in dictionary:
-            for i in range(len(dictionary[word].postings_list)):
-                doc_id = dictionary[word].postings_list[i].doc_id
-                dictionary[word].postiongs_list[i] = dictionary[word].postiongs_list[i] / doc_cosine_normalization_denominator[doc_id]
+            for idx in range(len(dictionary[word].postings_list)):
+                doc_id = dictionary[word].postings_list[idx].doc_id
+                self.__document_tf_idf_calculator(word, idx, documents_length, dictionary)
+                if doc_id in doc_cosine_normalization_denominator:
+                    doc_cosine_normalization_denominator[doc_id] += dictionary[word].postings_list[idx].tf_idf
+                else:
+                    doc_cosine_normalization_denominator[doc_id] = dictionary[word].postings_list[idx].tf_idf
 
-    def __document_tf_idf_calculator(self, term: str, postings_list_ind: int, documents_length: int, dictionary: dict):
-        dictionary[term].postings_list[postings_list_ind].tf_idf = (1 + math.log(dictionary[term].postings_list[postings_list_ind].term_frequency, 10)) * math.log(
+        # now we normalize calculated weight
+        for word in dictionary:
+            for idx in range(len(dictionary[word].postings_list)):
+                doc_id = dictionary[word].postings_list[idx].doc_id
+                dictionary[word].postiongs_list[idx] = dictionary[word].postiongs_list[idx] / doc_cosine_normalization_denominator[doc_id]
+
+    def __document_tf_idf_calculator(self, term: str, postings_list_idx: int, documents_length: int, dictionary: dict):
+        dictionary[term].postings_list[postings_list_idx].tf_idf = (1 + math.log(dictionary[term].postings_list[postings_list_idx].term_frequency, 10)) * math.log(
             documents_length / dictionary[term].doc_frequency, 10)
 
-    def similarity_query_and_doc(self, query, idx, doc_id: str, documents_length: int, dictionary: dict, is_champion_list=False, main_dict=None):
+    # index of document
+    def similarity_query_and_doc(self, query, doc_id: str, documents_length: int, dictionary: dict, is_champion_list=False, main_dict=None):
         similarity = 0
         query_tf_idf = self.__query_tf_idf_calculator(query, documents_length, dictionary, is_champion_list, main_dict)
         for word in query_tf_idf:
-            if word in dictionary and dictionary[word].postings_list.is_contains_doc_id(doc_id):
-                similarity += query_tf_idf[word] * dictionary[word].postings_list[idx].tf_idf
+            if word in dictionary:
+                temp_posting = dictionary[word].postings_list.get_postings_by_doc_id(doc_id)
+                if temp_posting is not None:
+                    similarity += query_tf_idf[word] * temp_posting.tf_idf
         return similarity
 
     def __query_tf_idf_calculator(self, query: str, documents_length: int, dictionary: dict, is_champion_list=False, main_dict=None) -> dict:
-        # at first we normalize query
+        # at first, we normalize query but not for champion list because they already normalized
         if not is_champion_list:
             preprocessor = PreProcessor()
             query = preprocessor.query_preprocessor_handler(query)
@@ -62,7 +66,7 @@ class ScoringVector:
             query_tf_idf[word] = query_tf_idf[word] / query_cosine_normalization_denominator
         return query_tf_idf
 
-    def __word_frequency_in_query_calculator(self, query: str):
+    def __word_frequency_in_query_calculator(self, query: str) -> dict[str, int]:  # dict [word, frequency]
         customStemmer = CustomStemmer()
         word_frequency = {}
         word = ''
