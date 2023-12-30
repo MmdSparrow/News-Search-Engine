@@ -15,3 +15,6 @@ hazm_stem('خبرگان')
 hazm_stem('اخباری')
 hazm_stem('خبرنگار')
 hazm_stem('خبرنگاری')
+hazm_stem('مسابفات')
+
+
