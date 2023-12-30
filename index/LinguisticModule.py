@@ -22,9 +22,9 @@ class LinguisticModule:
     def __report(self, stream_token_length, new_stream_token_length):
         print("##########################################################################################")
         total_frequency = 0
-        for i in range(len(self.most_repeated_word.queue)):
+        for i in range(len(self.most_repeated_word.queue)-1, -1, -1):
             word, freq = self.most_repeated_word.queue[i]
-            print(f'{i + 1}- (Word, Frequency):({word}, {freq})')
+            print(f'{50-i}- (Word, Frequency):({word}, {freq})')
             total_frequency += freq
         print(f'Total Frequency: {total_frequency}')
         print(f'Stream Token Length: {stream_token_length}')
