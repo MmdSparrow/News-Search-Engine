@@ -34,16 +34,16 @@ class ChampionsLists:
             termp_champion_dict[term] = self.__find_k_largest_element(max_list, max_list_size, self.K)
         return termp_champion_dict
 
-    def search_query_in_champions_list(self, query: str, answer_dict, document_length, scoring_vector, main_dict):
+    def search_query_in_champions_list(self, query: str, answer_dict, document_length, scoring_vector, K, main_dict):
         # normalize query
         preprocessor = PreProcessor()
         query = preprocessor.query_preprocessor_handler(query)
 
         # find k most similar in champion dict
-        doc_id_list = self.__find_k_most_similar_documents(query, answer_dict.keys(), document_length, self.champions_dict, scoring_vector, main_dict)
+        doc_id_list = self.__find_k_most_similar_documents(query, answer_dict.keys(), document_length, self.champions_dict, scoring_vector, K, main_dict)
         return doc_id_list
 
-    def __find_k_most_similar_documents(self, query: str, documents_id: list, documents_length: int, dictionary: dict, scoring_vector: ScoringVector, main_dict=None):
+    def __find_k_most_similar_documents(self, query: str, documents_id: list, documents_length: int, dictionary: dict, scoring_vector: ScoringVector, K, main_dict=None):
         docId_similarity_list = []
         docId_similarity_size = 0
         for doc_id in documents_id:
@@ -52,7 +52,7 @@ class ChampionsLists:
                 # heapq sort tuple based on first element of tuple
                 docId_similarity_list.append((similarity, doc_id))
                 docId_similarity_size += 1
-        return self.__find_k_largest_element(docId_similarity_list, docId_similarity_size, self.K)
+        return self.__find_k_largest_element(docId_similarity_list, docId_similarity_size, K)
 
     def __find_k_largest_element(self, array: list, array_size: int, k: int) -> list[str]:
         result = []

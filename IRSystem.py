@@ -7,7 +7,7 @@ from chmpionsIndex.ChampionsLists import ChampionsLists
 
 class IRSystem:
     def __init__(self):
-        self.K = 4
+        self.K = 3
         self.DATASTORE_PATH = 'datastore/'
 
     def handler(self):
@@ -24,7 +24,7 @@ class IRSystem:
     def __search(self, query, positional_index, scoring_vector, champions_list):
         # self, query: str, answer_dict, document_length, scoring_vector
         doc_id_list = champions_list.search_query_in_champions_list(query, positional_index.documents_title_url_dict, positional_index.document_length, scoring_vector,
-                                                                    positional_index.dictionary)
+                                                                    self.K, positional_index.dictionary)
         # reminded = self.K - len(doc_id_list)
         # if reminded != 0:
         #     doc_id_list = self.__find_k_most_similar_documents(query, reminded, positional_index.documents_title_url_dict.keys(), positional_index.document_length,
@@ -33,10 +33,10 @@ class IRSystem:
         if (len(doc_id_list) == 0):
             print("No result!")
         else:
-            for doc_id in doc_id_list:
-                print('doc_id: ' + str(doc_id))
-                print('doc title: ' + positional_index.documents_title_url_dict[str(doc_id)][0])
-                print('doc url: ' + positional_index.documents_title_url_dict[str(doc_id)][1])
+            for i in range(min(len(doc_id_list), self.K)):
+                print('doc_id: ' + str(doc_id_list[i]))
+                print('doc title: ' + positional_index.documents_title_url_dict[str(doc_id_list[i])][0])
+                print('doc url: ' + positional_index.documents_title_url_dict[str(doc_id_list[i])][1])
                 print('')
 
     def __run_IR_system_by_creating(self):

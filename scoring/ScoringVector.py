@@ -43,13 +43,13 @@ class ScoringVector:
         query_cosine_normalization_denominator = 0
         # chon bayad az ruye main_dict tf_idf champion list ha hesab beshe ama tuye champion_dict por beshe bayad main_dict ro ham dashte bashim
         if is_champion_list and main_dict is not None:
-            for word in query_word_frequency_dict.keys():
+            for word in query_word_frequency_dict:
                 # we have to check it is  exist in dictionary
                 if word in main_dict:
                     query_tf_idf[word] = (1 + math.log(query_word_frequency_dict[word], 10)) * math.log((documents_length + 1) / main_dict[word][1], 10)
                     query_cosine_normalization_denominator += query_tf_idf[word]
         else:
-            for word in query_word_frequency_dict.keys():
+            for word in query_word_frequency_dict:
                 # we have to check it is  exist in dictionary
                 if word in dictionary:
                     query_tf_idf[word] = (1 + math.log(query_word_frequency_dict[word], 10)) * math.log((documents_length + 1) / dictionary[word][1], 10)
