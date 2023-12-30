@@ -34,9 +34,9 @@ class IRSystem:
             print("No result!")
         else:
             for i in range(min(len(doc_id_list), self.K)):
-                print('doc_id: ' + str(doc_id_list[i]))
-                print('doc title: ' + positional_index.documents_title_url_dict[str(doc_id_list[i])][0])
-                print('doc url: ' + positional_index.documents_title_url_dict[str(doc_id_list[i])][1])
+                print('doc_id: ' + str(doc_id_list[len(doc_id_list)-1-i]))
+                print('doc title: ' + positional_index.documents_title_url_dict[str(doc_id_list[len(doc_id_list)-1-i])][0])
+                print('doc url: ' + positional_index.documents_title_url_dict[str(doc_id_list[len(doc_id_list)-1-i])][1])
                 print('')
 
     def __run_IR_system_by_creating(self):
