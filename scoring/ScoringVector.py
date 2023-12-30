@@ -35,9 +35,8 @@ class ScoringVector:
 
     def __query_tf_idf_calculator(self, query: str, documents_length: int, dictionary: dict, is_champion_list=False, main_dict=None) -> dict:
         # at first we normalize query
-        if not is_champion_list:
-            preprocessor = PreProcessor()
-            query = preprocessor.query_preprocessor_handler(query)
+        preprocessor = PreProcessor()
+        query = preprocessor.query_preprocessor_handler(query)
         query_word_frequency_dict = self.__word_frequency_in_query_calculator(query)
         query_tf_idf = {}
         query_cosine_normalization_denominator = 0
