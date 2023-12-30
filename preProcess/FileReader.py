@@ -25,6 +25,9 @@ class FileReader:
             # read content
             documents_content.append(data[i_string]['content'].strip())
 
+            # test
+            # print(data[i_string]['content'].strip())
+
         f.close()
 
         return documents_len, documents_content, documents_title_url_dict

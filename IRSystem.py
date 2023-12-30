@@ -33,7 +33,7 @@ class IRSystem:
         if (len(doc_id_list) == 0):
             print("No result!")
         else:
-            for doc_id in range(len(doc_id_list)):
+            for doc_id in doc_id_list:
                 print('doc_id: ' + str(doc_id))
                 print('doc title: ' + positional_index.documents_title_url_dict[str(doc_id)][0])
                 print('doc url: ' + positional_index.documents_title_url_dict[str(doc_id)][1])
