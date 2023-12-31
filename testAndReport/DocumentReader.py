@@ -5,7 +5,7 @@ class FileReader:
     DEFAULT_PATH = '../data/IR_data_news_12k.json'
 
     def __init__(self):
-        self.needed_list = [9084, 3933, 10043]
+        self.needed_list = [8274, 10084, 9807]
 
     def read_file(self, path: str = DEFAULT_PATH):
         documents_content = []
