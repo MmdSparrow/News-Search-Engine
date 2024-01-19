@@ -1,8 +1,6 @@
 from index.LinguisticModule import LinguisticModule
 from preProcess.PreProcessor import PreProcessor
 from index.Tokenizer import Tokenizer
-from index.Posting import Posting
-from index.TermValue import TermValue
 import datetime
 
 
@@ -31,7 +29,6 @@ class PositionalIndex:
         print(f"tokenizing.....................................................................done")
 
         start_time = datetime.datetime.now()
-        # linguistic_module.delete_50_most_repeated_words(word_frequency_dict)
         stream_token = linguistic_module.delete_50_most_repeated_words_stem_remains_from_tokens(stream_token)
         print("delete 50 most repeated.....................................................................done")
         end_time = datetime.datetime.now()
