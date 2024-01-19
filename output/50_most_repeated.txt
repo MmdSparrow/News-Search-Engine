@@ -47,7 +47,7 @@
 47- (Word, Frequency):(می‌‌شود, 8530)
 48- (Word, Frequency):(کار, 8461)
 49- (Word, Frequency):(نیز, 8297)
-50- (Word, Frequency):(می‌‌کنند, 3334)
-Total Frequency: 1534565
+50- (Word, Frequency):(امروز, 8269)
+Total Frequency: 1539500
 Stream Token Length: 4521736
-New Stream Token Length: 2987171
+New Stream Token Length: 2982236
