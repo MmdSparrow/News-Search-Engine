@@ -25,10 +25,10 @@ class PositionalIndex:
         tokenizer = Tokenizer()
         linguistic_module = LinguisticModule()
 
-        stream_token = tokenizer.tokenize_document(document_content, self.document_length, linguistic_module.most_repeated_word)
+        stream_token, linguistic_module.most_repeated_word = tokenizer.tokenize_document(document_content, self.document_length)
         print(f"tokenizing.....................................................................done")
-
         start_time = datetime.datetime.now()
+
         stream_token = linguistic_module.delete_50_most_repeated_words_stem_remains_from_tokens(stream_token)
         print("delete 50 most repeated.....................................................................done")
         end_time = datetime.datetime.now()

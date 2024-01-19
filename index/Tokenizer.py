@@ -1,7 +1,6 @@
 from index.PriorityQueueWithFixedLength import PriorityQueueWithFixedLength
 from pathlib import Path
 
-
 class Tokenizer:
     HALF_SPACE_CHARACTER = chr(0x200c)
     SPACE_CHARACTER = ' '
@@ -11,7 +10,7 @@ class Tokenizer:
         self.word_frequency_dict = {}
         self.special_word_for_halfspace_separation = ['می‌', 'می']
         self.exception_for_before_verbs = {'که', 'به', 'در', 'از', 'با', 'بر'}
-        with Path.open(Path("../data/verbs.dat"), encoding="utf8") as verbs_file:
+        with Path.open(Path("data/verbs.dat"), encoding="utf8") as verbs_file:
             self.verbs = list(
                 reversed([verb.strip() for verb in verbs_file if verb]),
             )
@@ -105,42 +104,42 @@ class Tokenizer:
             "باشیم",
             "باشید",
             "باشند",
-            "شده‌ام",
-            "شده‌ای",
-            "شده‌است",
-            "شده‌ایم",
-            "شده‌اید",
-            "شده‌اند",
-            "شده‌بودم",
-            "شده‌بودی",
-            "شده‌بود",
-            "شده‌بودیم",
-            "شده‌بودید",
-            "شده‌بودند",
-            "شده‌باشم",
-            "شده‌باشی",
-            "شده‌باشد",
-            "شده‌باشیم",
-            "شده‌باشید",
-            "شده‌باشند",
-            "نشده‌ام",
-            "نشده‌ای",
-            "نشده‌است",
-            "نشده‌ایم",
-            "نشده‌اید",
-            "نشده‌اند",
-            "نشده‌بودم",
-            "نشده‌بودی",
-            "نشده‌بود",
-            "نشده‌بودیم",
-            "نشده‌بودید",
-            "نشده‌بودند",
-            "نشده‌باشم",
-            "نشده‌باشی",
-            "نشده‌باشد",
-            "نشده‌باشیم",
-            "نشده‌باشید",
-            "نشده‌باشند",
+            "شده_ام",
+            "شده_ای",
+            "شده_است",
+            "شده_ایم",
+            "شده_اید",
+            "شده_اند",
+            "شده_بودم",
+            "شده_بودی",
+            "شده_بود",
+            "شده_بودیم",
+            "شده_بودید",
+            "شده_بودند",
+            "شده_باشم",
+            "شده_باشی",
+            "شده_باشد",
+            "شده_باشیم",
+            "شده_باشید",
+            "شده_باشند",
+            "نشده_ام",
+            "نشده_ای",
+            "نشده_است",
+            "نشده_ایم",
+            "نشده_اید",
+            "نشده_اند",
+            "نشده_بودم",
+            "نشده_بودی",
+            "نشده_بود",
+            "نشده_بودیم",
+            "نشده_بودید",
+            "نشده_بودند",
+            "نشده_باشم",
+            "نشده_باشی",
+            "نشده_باشد",
+            "نشده_باشیم",
+            "نشده_باشید",
+            "نشده_باشند",
             "شوم",
             "شوی",
             "شود",
@@ -189,27 +188,30 @@ class Tokenizer:
             "نمی‌شدیم",
             "نمی‌شدید",
             "نمی‌شدند",
-            "خواهم‌شد",
-            "خواهی‌شد",
-            "خواهد‌شد",
-            "خواهیم‌شد",
-            "خواهید‌شد",
-            "خواهند‌شد",
-            "نخواهم‌شد",
-            "نخواهی‌شد",
-            "نخواهد‌شد",
-            "نخواهیم‌شد",
-            "نخواهید‌شد",
-            "نخواهند‌شد",
+            "خواهم_شد",
+            "خواهی_شد",
+            "خواهد_شد",
+            "خواهیم_شد",
+            "خواهید_شد",
+            "خواهند_شد",
+            "نخواهم_شد",
+            "نخواهی_شد",
+            "نخواهد_شد",
+            "نخواهیم_شد",
+            "نخواهید_شد",
+            "نخواهند_شد",
         }
 
-    def tokenize_document(self, document_content: list[str], document_len: int, priority_queue_with_fixed_length: PriorityQueueWithFixedLength) -> (
-            list[tuple[str, str, int]], dict):
+    def tokenize_document(self, document_content: list[str], document_len: int) -> (list[tuple[str, str, int]], dict):
+        priority_queue_with_fixed_length = PriorityQueueWithFixedLength()
         for i in range(document_len):
             self.__doc_tokenize(str(i), document_content[i], priority_queue_with_fixed_length)
+        # return self.stream_token, priority_queue_with_fixed_length
+
         # post process
         self.__postProcessTokenStream()
-        return self.stream_token
+        priority_queue_with_fixed_length = self.__update_queue_when_using_after_before_verbs()
+        return self.stream_token, priority_queue_with_fixed_length
 
     def __doc_tokenize(self, doc_id: str, doc_string: str, priority_queue_with_fixed_length: PriorityQueueWithFixedLength) -> None:
         word = ''
@@ -246,7 +248,7 @@ class Tokenizer:
         for i in range(len(self.stream_token) - 1):
             if self.stream_token[i] is not None and self.stream_token[i + 1] is not None:
                 if self.stream_token[i][0] in self.before_verbs and self.stream_token[i + 1][0] not in self.exception_for_before_verbs:
-                    self.stream_token[i] = (self.stream_token[i][0] + self.SPACE_CHARACTER + self.stream_token[i + 1][0], self.stream_token[i][1], self.stream_token[i][2])
+                    self.stream_token[i] = (self.stream_token[i][0] + "_" + self.stream_token[i + 1][0], self.stream_token[i][1], self.stream_token[i][2])
                     i += 1
                     self.stream_token[i] = None
 
@@ -254,6 +256,21 @@ class Tokenizer:
         for i in range(len(self.stream_token) - 1):
             if self.stream_token[i] is not None and self.stream_token[i + 1] is not None:
                 if self.stream_token[i][0] in self.verbe and self.stream_token[i + 1][0] in self.after_verbs:
-                    self.stream_token[i] = (self.stream_token[i][0] + self.HALF_SPACE_CHARACTER + self.stream_token[i + 1][0], self.stream_token[i][1], self.stream_token[i][2])
+                    self.stream_token[i] = (self.stream_token[i][0] + "_" + self.stream_token[i + 1][0], self.stream_token[i][1], self.stream_token[i][2])
                     i += 1
                     self.stream_token[i] = None
+
+        self.stream_token = list(filter(None, self.stream_token))
+
+    def __update_queue_when_using_after_before_verbs(self):
+        new_queue = PriorityQueueWithFixedLength()
+        new_word_frequency_dict = {}
+
+        for token in self.stream_token:
+            if token[0] not in new_word_frequency_dict:
+                new_word_frequency_dict[token[0]] = 1
+            else:
+                new_word_frequency_dict[token[0]] += 1
+            new_queue.push(token[0], new_word_frequency_dict[token[0]])
+
+        return new_queue

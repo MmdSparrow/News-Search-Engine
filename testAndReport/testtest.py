@@ -8,7 +8,7 @@ from index.Tokenizer import Tokenizer
 
 tokenizer = Tokenizer()
 priorityQueue = PriorityQueueWithFixedLength()
-print(tokenizer.tokenize_document(["می‌خواهم بروم از این دنیا رفته است بزرگ است"], 1, priorityQueue))
+print(tokenizer.tokenize_document(["می‌خواهم بروم از این دنیا رفته است بزرگ است"], 1))
 
 # parsivarTokenizer = Tokenizer()
 # print(parsivarTokenizer.tokenize_words("میخواهم بروم از این دنیای کیری"))
