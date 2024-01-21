@@ -1,6 +1,7 @@
 from index.PriorityQueueWithFixedLength import PriorityQueueWithFixedLength
 from pathlib import Path
 
+
 class Tokenizer:
     HALF_SPACE_CHARACTER = chr(0x200c)
     SPACE_CHARACTER = ' '
@@ -9,7 +10,7 @@ class Tokenizer:
         self.stream_token = []
         self.word_frequency_dict = {}
         self.special_word_for_halfspace_separation = ['می‌', 'می']
-        self.exception_for_before_verbs = {'که', 'به', 'در', 'از', 'با', 'بر'}
+        self.exception_for_before_verbs = {'که', 'به', 'در', 'از', 'با', 'بر', 'و', 'این', 'اما', 'اینکه'}
         with Path.open(Path("data/verbs.dat"), encoding="utf8") as verbs_file:
             self.verbs = list(
                 reversed([verb.strip() for verb in verbs_file if verb]),
@@ -209,7 +210,7 @@ class Tokenizer:
         # return self.stream_token, priority_queue_with_fixed_length
 
         # post process
-        self.__postProcessTokenStream()
+        self.__post_process_token_stream()
         priority_queue_with_fixed_length = self.__update_queue_when_using_after_before_verbs()
         return self.stream_token, priority_queue_with_fixed_length
 
@@ -232,7 +233,7 @@ class Tokenizer:
                 word += char
 
         if word.strip() != '':
-            self.stream_token.append((word, position, doc_id))
+            self.stream_token.append((word, doc_id, position))
             word_frequency = self.__update_frequency(word)
             priority_queue_with_fixed_length.push(word, word_frequency)
 
@@ -243,10 +244,10 @@ class Tokenizer:
             self.word_frequency_dict[word] = 1
         return self.word_frequency_dict[word]
 
-    def __postProcessTokenStream(self):
+    def __post_process_token_stream(self):
         # before verbs
         for i in range(len(self.stream_token) - 1):
-            if self.stream_token[i] is not None and self.stream_token[i + 1] is not None:
+            if self.stream_token[i] is not None and self.stream_token[i + 1] is not None and self.stream_token[i][1] == self.stream_token[i + 1][1]:
                 if self.stream_token[i][0] in self.before_verbs and self.stream_token[i + 1][0] not in self.exception_for_before_verbs:
                     self.stream_token[i] = (self.stream_token[i][0] + "_" + self.stream_token[i + 1][0], self.stream_token[i][1], self.stream_token[i][2])
                     i += 1
@@ -254,7 +255,7 @@ class Tokenizer:
 
         # after verb
         for i in range(len(self.stream_token) - 1):
-            if self.stream_token[i] is not None and self.stream_token[i + 1] is not None:
+            if self.stream_token[i] is not None and self.stream_token[i + 1] is not None and self.stream_token[i][1] == self.stream_token[i + 1][1]:
                 if self.stream_token[i][0] in self.verbe and self.stream_token[i + 1][0] in self.after_verbs:
                     self.stream_token[i] = (self.stream_token[i][0] + "_" + self.stream_token[i + 1][0], self.stream_token[i][1], self.stream_token[i][2])
                     i += 1
@@ -274,3 +275,57 @@ class Tokenizer:
             new_queue.push(token[0], new_word_frequency_dict[token[0]])
 
         return new_queue
+
+    def tokenize_query(self, query_string):
+        query_tokens = []
+        word = ''
+        position = 1
+        for char in query_string.strip():
+            if char == ' ' or char == '\t' or char == '\n':
+                word = word.strip()
+                if word != '':
+                    # add word to stream token
+                    query_tokens.append((word, position))
+                    word = ''
+                    position += 1
+            else:
+                word += char
+
+        if word.strip() != '':
+            query_tokens.append((word, position))
+
+        # before verbs
+        for i in range(len(query_tokens) - 1):
+            if query_tokens[i] is not None and query_tokens[i + 1] is not None:
+                if query_tokens[i][0] in self.before_verbs and query_tokens[i + 1][0] not in self.exception_for_before_verbs:
+                    query_tokens[i] = (query_tokens[i][0] + "_" + query_tokens[i + 1][0], query_tokens[i][1])
+                    i += 1
+                    query_tokens[i] = None
+
+        # after verb
+        for i in range(len(query_tokens) - 1):
+            if query_tokens[i] is not None and query_tokens[i + 1] is not None:
+                if query_tokens[i][0] in self.verbe and query_tokens[i + 1][0] in self.after_verbs:
+                    query_tokens[i] = (query_tokens[i][0] + "_" + query_tokens[i + 1][0], query_tokens[i][1])
+                    i += 1
+                    query_tokens[i] = None
+
+        query_tokens = list(filter(None, query_tokens))
+
+        token_frequency = {}
+        for token in query_tokens:
+            if token[0] in token_frequency:
+                token_frequency[token[0]] += 1
+            else:
+                token_frequency[token[0]] = 1
+
+        # word: frequency, list of positions
+        stream_query_tokens = {}
+        for token in query_tokens:
+            if token[0] in stream_query_tokens:
+                stream_query_tokens[token[0]][1].append(token[1])
+                stream_query_tokens[token[0]][0] += 1
+            else:
+                stream_query_tokens[token[0]] = [1, [token[1]]]
+
+        return stream_query_tokens
