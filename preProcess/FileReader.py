@@ -14,7 +14,7 @@ class FileReader:
         data = json.load(f)
         documents_len = len(data)
         # for test uncomment following line
-        # documents_len = 10
+        documents_len = 10
         documents_title_url_dict = {}
 
         for i in range(0, documents_len):
@@ -26,7 +26,7 @@ class FileReader:
             documents_content.append(data[i_string]['content'].strip())
 
             # test
-            # print(data[i_string]['content'].strip())
+            print(data[i_string]['content'].strip())
 
         f.close()
 

@@ -96,8 +96,9 @@ class Normalizer:
     def __character_delete(self, doc_string):
         # alef keshide bayad character ghablish fathe bashe baadesh alef biad un moghe mishe alef keshide. pas bayad ghabl az hazf fathe hazf shavad!
         CHARACTER_DELETE_KEYS = ['ْ', 'ٌ', 'ٍ', 'ً', 'ُ', 'ِ', 'َ', 'ّ', '!', '>', '<', ',', '،', 'ٰ', '؛', ':', '{',
-                                 '}', '[', ']', ')', '(', '*', ';', '\"', '\'', '.']
-        CHARACTER_DELETE_VALUE = ' '  # space is better than nothing: 'cuase the writing rules may not have been followed correctly (eg. lab lab lab.lab lab lab)
+                                 '}', '[', ']', ')', '(', '*', ';', '\"', '\'', '. ', ' .']
+        # CHARACTER_DELETE_VALUE = ' '  # space is better than nothing: 'cuase the writing rules may not have been followed correctly (eg. lab lab lab.lab lab lab)
+        CHARACTER_DELETE_VALUE = ''
 
         character_delete_item = {}
         for char in CHARACTER_DELETE_KEYS:
@@ -110,13 +111,13 @@ class Normalizer:
 
     def __english_digit_replacement(self, doc_string):
 
-        ENGLSIH_DIGITS = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
+        ENGLISH_DIGITS = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
         PERSIAN_DIGITS = ['۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹']
 
         digit_replacement_items = {}
 
         for i in range(0, 10):
-            digit_replacement_items[ENGLSIH_DIGITS[i]] = PERSIAN_DIGITS[i]
+            digit_replacement_items[ENGLISH_DIGITS[i]] = PERSIAN_DIGITS[i]
 
         digit_replacement_items = dict((re.escape(k), v) for k, v in digit_replacement_items.items())
         digit_replacement_pattern = re.compile("|".join(digit_replacement_items.keys()))

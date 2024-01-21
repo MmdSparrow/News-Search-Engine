@@ -1,5 +1,6 @@
-from index.PriorityQueueWithFixedLength import PriorityQueueWithFixedLength
+import regex as re
 from pathlib import Path
+from index.PriorityQueueWithFixedLength import PriorityQueueWithFixedLength
 
 
 class Tokenizer:
@@ -9,9 +10,10 @@ class Tokenizer:
     def __init__(self):
         self.stream_token = []
         self.word_frequency_dict = {}
-        self.special_word_for_halfspace_separation = ['می‌', 'می']
+        self.before_expected_word_for_halfspace_separation = ['نمی‌', 'می‌']
+        self.after_expected_word_for_halfspace_separation = ['ی', 'ها', 'تر', 'گر', 'ام', 'ات', 'اش', 'های', 'تری', 'گری', 'هایی', 'ترین', 'اعداد']
         self.exception_for_before_verbs = {'که', 'به', 'در', 'از', 'با', 'بر', 'و', 'این', 'اما', 'اینکه'}
-        with Path.open(Path("data/verbs.dat"), encoding="utf8") as verbs_file:
+        with Path.open(Path("../data/verbs.dat"), encoding="utf8") as verbs_file:
             self.verbs = list(
                 reversed([verb.strip() for verb in verbs_file if verb]),
             )
@@ -212,30 +214,29 @@ class Tokenizer:
         # post process
         self.__post_process_token_stream()
         priority_queue_with_fixed_length = self.__update_queue_when_using_after_before_verbs()
+        self.__persian_digit_replacement_in_id_and_email()
         return self.stream_token, priority_queue_with_fixed_length
 
     def __doc_tokenize(self, doc_id: str, doc_string: str, priority_queue_with_fixed_length: PriorityQueueWithFixedLength) -> None:
-        word = ''
-        position = 1
-        for char in doc_string.strip():
-            # todo: be nazaram in " or char == half_space_char " nabashe behtare
-            # if char == ' ' or char == '\t' or char == '\n' or (char == self.HALF_SPACE_CHARACTER and (word in self.special_word_for_halfspace_separation)):
-            if char == ' ' or char == '\t' or char == '\n':
-                word = word.strip()
-                if word != '':
-                    # add word to stream token
-                    self.stream_token.append((word, doc_id, position))
-                    word_frequency = self.__update_frequency(word)
-                    priority_queue_with_fixed_length.push(word, word_frequency)
-                    word = ''
-                    position += 1
-            else:
-                word += char
+        result = re.split(r'[\s]', doc_string)
+        result = list(filter(''.__ne__, result))
+        final_result = []
+        # before_conditions_string = ""
+        # after_conditions_string = self.after_expected_word_for_halfspace_separation[0]
+        # for i_str in self.before_expected_word_for_halfspace_separation:
+        #     before_conditions_string += "(?<!" + i_str + ')'
+        # for i in range(1, len(self.after_expected_word_for_halfspace_separation)):
+        #     after_conditions_string += " |" + self.after_expected_word_for_halfspace_separation[i]
+        regex_str = r'(?<!می)(?<!نمی)[‌](?!ی)(?!ها)(?!تر)(?!گر)(?!ام)(?!اش)(?!های)(?!تری)(?!گری)(?!هایی)(?!ترین)(?!اعداد)'
+        for word in result:
+            final_result.extend(re.split(regex_str, word))
 
-        if word.strip() != '':
+        position = 1
+        for word in final_result:
             self.stream_token.append((word, doc_id, position))
             word_frequency = self.__update_frequency(word)
             priority_queue_with_fixed_length.push(word, word_frequency)
+            position += 1
 
     def __update_frequency(self, word: str) -> int:
         if word in self.word_frequency_dict:
@@ -277,22 +278,24 @@ class Tokenizer:
         return new_queue
 
     def tokenize_query(self, query_string):
-        query_tokens = []
-        word = ''
-        position = 1
-        for char in query_string.strip():
-            if char == ' ' or char == '\t' or char == '\n':
-                word = word.strip()
-                if word != '':
-                    # add word to stream token
-                    query_tokens.append((word, position))
-                    word = ''
-                    position += 1
-            else:
-                word += char
+        result = re.split(r'[\s]', query_string)
+        result = list(filter(''.__ne__, result))
+        final_result = []
+        # before_conditions_string = ""
+        # after_conditions_string = self.after_expected_word_for_halfspace_separation[0]
+        # for i_str in self.before_expected_word_for_halfspace_separation:
+        #     before_conditions_string += "(?<!" + i_str + ')'
+        # for i in range(1, len(self.after_expected_word_for_halfspace_separation)):
+        #     after_conditions_string += " |" + self.after_expected_word_for_halfspace_separation[i]
+        regex_str = r'(?<!می)(?<!نمی)[‌](?!ی)(?!ها)(?!تر)(?!گر)(?!ام)(?!اش)(?!های)(?!تری)(?!گری)(?!هایی)(?!ترین)(?!اعداد)'
+        for word in result:
+            final_result.extend(re.split(regex_str, word))
 
-        if word.strip() != '':
+        position = 1
+        query_tokens = []
+        for word in final_result:
             query_tokens.append((word, position))
+            position += 1
 
         # before verbs
         for i in range(len(query_tokens) - 1):
@@ -312,6 +315,23 @@ class Tokenizer:
 
         query_tokens = list(filter(None, query_tokens))
 
+        PERSIAN_DIGITS = ['۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹']
+        ENGLISH_DIGITS = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
+
+        digit_replacement_items = {}
+
+        for i in range(0, 10):
+            digit_replacement_items[PERSIAN_DIGITS[i]] = ENGLISH_DIGITS[i]
+
+        digit_replacement_items = dict((re.escape(k), v) for k, v in digit_replacement_items.items())
+        digit_replacement_pattern = re.compile("|".join(digit_replacement_items.keys()))
+        for i in range(len(query_tokens)):
+            if '@' in query_tokens[i][0]:
+                query_tokens[i] = (
+                    digit_replacement_pattern.sub(lambda m: digit_replacement_items[re.escape(m.group(0))], query_tokens[i][0]),
+                    query_tokens[i][1]
+                )
+
         token_frequency = {}
         for token in query_tokens:
             if token[0] in token_frequency:
@@ -329,3 +349,23 @@ class Tokenizer:
                 stream_query_tokens[token[0]] = [1, [token[1]]]
 
         return stream_query_tokens
+
+    def __persian_digit_replacement_in_id_and_email(self):
+
+        PERSIAN_DIGITS = ['۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹']
+        ENGLISH_DIGITS = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
+
+        digit_replacement_items = {}
+
+        for i in range(0, 10):
+            digit_replacement_items[PERSIAN_DIGITS[i]] = ENGLISH_DIGITS[i]
+
+        digit_replacement_items = dict((re.escape(k), v) for k, v in digit_replacement_items.items())
+        digit_replacement_pattern = re.compile("|".join(digit_replacement_items.keys()))
+        for i in range(len(self.stream_token)):
+            if '@' in self.stream_token[i][0]:
+                self.stream_token[i] = (
+                    digit_replacement_pattern.sub(lambda m: digit_replacement_items[re.escape(m.group(0))], self.stream_token[i][0]),
+                    self.stream_token[i][1],
+                    self.stream_token[i][2]
+                )
