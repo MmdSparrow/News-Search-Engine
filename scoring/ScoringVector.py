@@ -23,7 +23,10 @@ class ScoringVector:
                 dictionary[word][2][doc_id][1] = dictionary[word][2][doc_id][1] / doc_cosine_normalization_denominator[doc_id]
 
     def __document_tf_idf_calculator(self, term: str, doc_id: str, documents_length: int, dictionary: dict):
+        # ltc
         dictionary[term][2][doc_id][1] = (1 + math.log(dictionary[term][2][doc_id][0], 10)) * math.log(documents_length / dictionary[term][1], 10)
+        # lnc
+        # dictionary[term][2][doc_id][1] = (1 + math.log(dictionary[term][2][doc_id][0], 10)) * 1
 
     def similarity_query_and_doc(self, query, doc_id: str, documents_length: int, dictionary: dict, is_champion_list=False, main_dict=None):
         similarity = 0
@@ -46,13 +49,15 @@ class ScoringVector:
             for word in query_word_frequency_dict:
                 # we have to check it exist in dictionary
                 if word in main_dict:
-                    query_tf_idf[word] = (1 + math.log(query_word_frequency_dict[word][0], 10)) * math.log((documents_length + 1) / main_dict[word][1], 10)
+                    # query_tf_idf[word] = (1 + math.log(query_word_frequency_dict[word][0], 10)) * math.log((documents_length + 1) / main_dict[word][1], 10)
+                    query_tf_idf[word] = (1 + math.log(query_word_frequency_dict[word][0], 10)) * 1
                     query_cosine_normalization_denominator += query_tf_idf[word]
         else:
             for word in query_word_frequency_dict:
                 # we have to check it is  exist in dictionary
                 if word in dictionary:
-                    query_tf_idf[word] = (1 + math.log(query_word_frequency_dict[word][0], 10)) * math.log((documents_length + 1) / dictionary[word][1], 10)
+                    # query_tf_idf[word] = (1 + math.log(query_word_frequency_dict[word][0], 10)) * math.log((documents_length + 1) / dictionary[word][1], 10)
+                    query_tf_idf[word] = (1 + math.log(query_word_frequency_dict[word][0], 10)) * 1
                     query_cosine_normalization_denominator += query_tf_idf[word]
         # cosine normalize
         for word in query_tf_idf.keys():

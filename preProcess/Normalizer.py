@@ -11,18 +11,20 @@ class Normalizer:
     def normalize_document(self, documents_content: list, documents_content_length: int):
         for i in range(documents_content_length):
             doc = self.__delete_end_of_content(documents_content[i])
+            doc = self.__remove_dots_except_emails(doc)
+            doc = self.__character_delete(doc)
+            doc = self.__unicode_replacement(doc)
             doc = self.__space_correction(doc)
             doc = self.__verb_prefix_separation(doc)
-            doc = self.__unicode_replacement(doc)
-            doc = self.__character_delete(doc)
             doc = self.__english_digit_replacement(doc)
             documents_content[i] = self.__abbreviation_replacement(doc)
 
     def normalize_query(self, query: str):
+        query = self.__remove_dots_except_emails(query)
+        query = self.__character_delete(query)
+        query = self.__unicode_replacement(query)
         query = self.__space_correction(query)
         query = self.__verb_prefix_separation(query)
-        query = self.__unicode_replacement(query)
-        query = self.__character_delete(query)
         query = self.__english_digit_replacement(query)
         return self.__abbreviation_replacement(query)
 
@@ -108,6 +110,15 @@ class Normalizer:
         character_delete_pattern = re.compile("|".join(character_delete_item.keys()))
 
         return character_delete_pattern.sub(lambda m: character_delete_item[re.escape(m.group(0))], doc_string)
+
+    def __remove_dots_except_emails(self, doc_string):
+        email_pattern = re.compile(r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b')
+        email_matches = email_pattern.findall(doc_string)
+        result_string = re.sub(r'\.', ' ', doc_string)
+        for email in email_matches:
+            result_string = result_string.replace(email.replace('.', ' '), email)
+
+        return result_string
 
     def __english_digit_replacement(self, doc_string):
 

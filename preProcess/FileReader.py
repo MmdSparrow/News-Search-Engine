@@ -16,7 +16,7 @@ class FileReader:
         documents_title_url_dict = {}
 
         # for test uncomment following line
-        documents_len = 1000
+        # documents_len = 1000
 
         for i in range(0, documents_len):
             i_string = str(i)

@@ -26,9 +26,10 @@ class IRSystem:
         # self, query: str, answer_dict, document_length, scoring_vector
         doc_id_list = champions_list.search_query_in_champions_list(query, positional_index.documents_title_url_dict, positional_index.document_length, scoring_vector,
                                                                     self.K, positional_index.dictionary)
-        reminded = self.K - len(doc_id_list)
-        if reminded != 0:
-            doc_id_list = self.__search_query_in_main_index(query, positional_index.documents_title_url_dict, positional_index.document_length, scoring_vector, self.K, positional_index.dictionary)
+        # reminded = self.K - len(doc_id_list)
+        # if reminded != 0:
+        #     doc_id_list = self.__search_query_in_main_index(query, positional_index.documents_title_url_dict, positional_index.document_length, scoring_vector, self.K, positional_index.dictionary)
+
         if (len(doc_id_list) == 0):
             print("No result!")
         else:
@@ -96,10 +97,6 @@ class IRSystem:
         return query
 
     def __search_query_in_main_index(self, query: str, answer_dict, document_length, scoring_vector, K, main_dict):
-        # normalize query
-        preprocessor = PreProcessor()
-        query = preprocessor.query_preprocessor_handler(query)
-
         # find k most similar in champion dict
         doc_id_list = self.__find_k_most_similar_documents(query, answer_dict.keys(), document_length,
                                                            main_dict, scoring_vector, K)

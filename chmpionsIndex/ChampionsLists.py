@@ -33,10 +33,6 @@ class ChampionsLists:
         return termp_champion_dict
 
     def search_query_in_champions_list(self, query: str, answer_dict, document_length, scoring_vector, K, main_dict):
-        # normalize query
-        preprocessor = PreProcessor()
-        query = preprocessor.query_preprocessor_handler(query)
-
         # find k most similar in champion dict
         doc_id_list = self.__find_k_most_similar_documents(query, answer_dict.keys(), document_length,
                                                            self.champions_dict, scoring_vector, K, main_dict)

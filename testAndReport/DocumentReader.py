@@ -8,10 +8,11 @@ class FileReader:
         # self.needed_list = [11168, 3439, 7027]
         # self.needed_list = [8274, 10084, 9807]
         # self.needed_list = [3492, 3512, 2584]
-        self.needed_list = [9084, 3933, 10043]
+        # self.needed_list = [9084, 3933, 10043]
         # self.needed_list = [3492, 3512, 9807]
         # self.needed_list = [3492, 3512, 9807]
         # self.needed_list = [3492, 3512, 9807]
+        self.needed_list = [6461]
 
     def read_file(self, path: str = DEFAULT_PATH):
         documents_content = []
