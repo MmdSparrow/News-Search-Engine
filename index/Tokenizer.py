@@ -5,15 +5,17 @@ from index.PriorityQueueWithFixedLength import PriorityQueueWithFixedLength
 
 class Tokenizer:
     HALF_SPACE_CHARACTER = chr(0x200c)
+    ZERO_WITH_CHARACTER = "\u8204"
     SPACE_CHARACTER = ' '
 
     def __init__(self):
         self.stream_token = []
         self.word_frequency_dict = {}
         self.before_expected_word_for_halfspace_separation = ['نمی‌', 'می‌']
-        self.after_expected_word_for_halfspace_separation = ['ی', 'ها', 'تر', 'گر', 'ام', 'ات', 'اش', 'های', 'تری', 'گری', 'هایی', 'ترین', 'اعداد']
+        self.after_expected_word_for_halfspace_separation = ['ی', 'ها', 'تر', 'گر', 'ام', 'ات', 'اش', 'های', 'تری',
+                                                             'گری', 'هایی', 'ترین', 'اعداد']
         self.exception_for_before_verbs = {'که', 'به', 'در', 'از', 'با', 'بر', 'و', 'این', 'اما', 'اینکه'}
-        with Path.open(Path("../data/verbs.dat"), encoding="utf8") as verbs_file:
+        with Path.open(Path("./data/verbs.dat"), encoding="utf8") as verbs_file:
             self.verbs = list(
                 reversed([verb.strip() for verb in verbs_file if verb]),
             )
@@ -217,9 +219,10 @@ class Tokenizer:
         self.__persian_digit_replacement_in_id_and_email()
         return self.stream_token, priority_queue_with_fixed_length
 
-    def __doc_tokenize(self, doc_id: str, doc_string: str, priority_queue_with_fixed_length: PriorityQueueWithFixedLength) -> None:
-        result = re.split(r'[\s]', doc_string)
-        result = list(filter(''.__ne__, result))
+    def __doc_tokenize(self, doc_id: str, doc_string: str,
+                       priority_queue_with_fixed_length: PriorityQueueWithFixedLength) -> None:
+        result = re.split('\s+', doc_string)
+        result = list(filter('‌'.__ne__, result))
         final_result = []
         # before_conditions_string = ""
         # after_conditions_string = self.after_expected_word_for_halfspace_separation[0]
@@ -227,9 +230,13 @@ class Tokenizer:
         #     before_conditions_string += "(?<!" + i_str + ')'
         # for i in range(1, len(self.after_expected_word_for_halfspace_separation)):
         #     after_conditions_string += " |" + self.after_expected_word_for_halfspace_separation[i]
-        regex_str = r'(?<!می)(?<!نمی)[‌](?!ی)(?!ها)(?!تر)(?!گر)(?!ام)(?!اش)(?!های)(?!تری)(?!گری)(?!هایی)(?!ترین)(?!اعداد)'
+        regex_str = r'(?<!می)(?<!نمی)(' + self.ZERO_WITH_CHARACTER + "|" + self.HALF_SPACE_CHARACTER + ')+(?!ی)(?!ها)(?!تر)(?!گر)(?!ام)(?!اش)(?!های)(?!تری)(?!گری)(?!هایی)(?!ترین)(?!اعداد)'
         for word in result:
-            final_result.extend(re.split(regex_str, word))
+            final_result.extend(re.split(regex_str, self.__multiple_half_space_replacer(word)))
+
+        final_result = list(filter(''.__ne__, final_result))
+        final_result = list(filter('‌'.__ne__, final_result))
+
 
         position = 1
         for word in final_result:
@@ -248,17 +255,24 @@ class Tokenizer:
     def __post_process_token_stream(self):
         # before verbs
         for i in range(len(self.stream_token) - 1):
-            if self.stream_token[i] is not None and self.stream_token[i + 1] is not None and self.stream_token[i][1] == self.stream_token[i + 1][1]:
-                if self.stream_token[i][0] in self.before_verbs and self.stream_token[i + 1][0] not in self.exception_for_before_verbs:
-                    self.stream_token[i] = (self.stream_token[i][0] + "_" + self.stream_token[i + 1][0], self.stream_token[i][1], self.stream_token[i][2])
+            if self.stream_token[i] is not None and self.stream_token[i + 1] is not None and self.stream_token[i][1] == \
+                    self.stream_token[i + 1][1]:
+                if self.stream_token[i][0] in self.before_verbs and self.stream_token[i + 1][
+                    0] not in self.exception_for_before_verbs:
+                    self.stream_token[i] = (
+                    self.stream_token[i][0] + "_" + self.stream_token[i + 1][0], self.stream_token[i][1],
+                    self.stream_token[i][2])
                     i += 1
                     self.stream_token[i] = None
 
         # after verb
         for i in range(len(self.stream_token) - 1):
-            if self.stream_token[i] is not None and self.stream_token[i + 1] is not None and self.stream_token[i][1] == self.stream_token[i + 1][1]:
+            if self.stream_token[i] is not None and self.stream_token[i + 1] is not None and self.stream_token[i][1] == \
+                    self.stream_token[i + 1][1]:
                 if self.stream_token[i][0] in self.verbe and self.stream_token[i + 1][0] in self.after_verbs:
-                    self.stream_token[i] = (self.stream_token[i][0] + "_" + self.stream_token[i + 1][0], self.stream_token[i][1], self.stream_token[i][2])
+                    self.stream_token[i] = (
+                    self.stream_token[i][0] + "_" + self.stream_token[i + 1][0], self.stream_token[i][1],
+                    self.stream_token[i][2])
                     i += 1
                     self.stream_token[i] = None
 
@@ -278,8 +292,7 @@ class Tokenizer:
         return new_queue
 
     def tokenize_query(self, query_string):
-        result = re.split(r'[\s]', query_string)
-        result = list(filter(''.__ne__, result))
+        result = re.split('\s+', query_string)
         final_result = []
         # before_conditions_string = ""
         # after_conditions_string = self.after_expected_word_for_halfspace_separation[0]
@@ -287,9 +300,11 @@ class Tokenizer:
         #     before_conditions_string += "(?<!" + i_str + ')'
         # for i in range(1, len(self.after_expected_word_for_halfspace_separation)):
         #     after_conditions_string += " |" + self.after_expected_word_for_halfspace_separation[i]
-        regex_str = r'(?<!می)(?<!نمی)[‌](?!ی)(?!ها)(?!تر)(?!گر)(?!ام)(?!اش)(?!های)(?!تری)(?!گری)(?!هایی)(?!ترین)(?!اعداد)'
+        regex_str = r'(?<!می)(?<!نمی)(' + self.ZERO_WITH_CHARACTER + "|" + self.HALF_SPACE_CHARACTER + ')+(?!ی)(?!ها)(?!تر)(?!گر)(?!ام)(?!اش)(?!های)(?!تری)(?!گری)(?!هایی)(?!ترین)(?!اعداد)'
         for word in result:
-            final_result.extend(re.split(regex_str, word))
+            final_result.extend(re.split(regex_str, self.__multiple_half_space_replacer(word)))
+
+        final_result = list(filter(''.__ne__, final_result))
 
         position = 1
         query_tokens = []
@@ -300,7 +315,8 @@ class Tokenizer:
         # before verbs
         for i in range(len(query_tokens) - 1):
             if query_tokens[i] is not None and query_tokens[i + 1] is not None:
-                if query_tokens[i][0] in self.before_verbs and query_tokens[i + 1][0] not in self.exception_for_before_verbs:
+                if query_tokens[i][0] in self.before_verbs and query_tokens[i + 1][
+                    0] not in self.exception_for_before_verbs:
                     query_tokens[i] = (query_tokens[i][0] + "_" + query_tokens[i + 1][0], query_tokens[i][1])
                     i += 1
                     query_tokens[i] = None
@@ -328,7 +344,8 @@ class Tokenizer:
         for i in range(len(query_tokens)):
             if '@' in query_tokens[i][0]:
                 query_tokens[i] = (
-                    digit_replacement_pattern.sub(lambda m: digit_replacement_items[re.escape(m.group(0))], query_tokens[i][0]),
+                    digit_replacement_pattern.sub(lambda m: digit_replacement_items[re.escape(m.group(0))],
+                                                  query_tokens[i][0]),
                     query_tokens[i][1]
                 )
 
@@ -365,7 +382,15 @@ class Tokenizer:
         for i in range(len(self.stream_token)):
             if '@' in self.stream_token[i][0]:
                 self.stream_token[i] = (
-                    digit_replacement_pattern.sub(lambda m: digit_replacement_items[re.escape(m.group(0))], self.stream_token[i][0]),
+                    digit_replacement_pattern.sub(lambda m: digit_replacement_items[re.escape(m.group(0))],
+                                                  self.stream_token[i][0]),
                     self.stream_token[i][1],
                     self.stream_token[i][2]
                 )
+
+    def __multiple_half_space_replacer(self, word):
+        word = word.replace('‌‌', '‌')
+        word = word.replace('‌‌', '‌')
+        word = word.replace('‌‌', '‌')
+        word = word.replace('‌‌', '‌')
+        return word

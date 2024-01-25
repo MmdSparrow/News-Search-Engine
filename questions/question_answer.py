@@ -1,24 +1,27 @@
-# چون {می خواهد برود} توسط هیچ یک از stemizer های کتابخانه های پینهاد شده ساپورت نمی شود پس باید آن ها را دوتا توکن جدا در نظر بگیریم
-
 from parsivar.stemmer import FindStems
 from hazm.stemmer import Stemmer
+from hazm.word_tokenizer import WordTokenizer
+from parsivar.tokenizer import Tokenizer
+from index.Tokenizer import Tokenizer as MyTokenizer
 
 
 def parsivar_stem(word, word_pos=None):
     return FindStems().convert_to_stem(word, word_pos)
 
+
 def hazm_stem(word):
     return Stemmer().stem(word)
 
-print('parsiavr:')
-print(parsivar_stem('می خواهد'))
-print(parsivar_stem('میخواهد'))
-print(parsivar_stem('میخواهد برود'))
-print(parsivar_stem('میخواهدـبرود'))
-print()
-print('hazm:')
-print(hazm_stem('می خواهد'))
-print(hazm_stem('میخواهد'))
-print(hazm_stem('میخواهد برود'))
-print(hazm_stem('میخواهدـبرود'))
-print(hazm_stem('خواهید_بروم'))
+
+tokenizer = Tokenizer()
+
+parsivarTokenizer = Tokenizer()
+print(parsivarTokenizer.tokenize_words("‌خواهم رفت از این دنیا"))
+
+hazmTokenizer = WordTokenizer()
+print(hazmTokenizer.tokenize("خواهم رفت از این دنیا"))
+
+print(hazm_stem("خواهم_رفت"))
+
+myTokenizer = MyTokenizer()
+print(myTokenizer.tokenize_query("نمی‌خواهم بروم از این دنیا"))

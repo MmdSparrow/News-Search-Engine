@@ -1,8 +1,6 @@
 import heapq
 from scoring.ScoringVector import ScoringVector
 from preProcess.PreProcessor import PreProcessor
-from index.CustomStemmer import CustomStemmer
-from index.PriorityQueueWithFixedLength import PriorityQueueWithFixedLength
 
 
 class ChampionsLists:
@@ -40,14 +38,17 @@ class ChampionsLists:
         query = preprocessor.query_preprocessor_handler(query)
 
         # find k most similar in champion dict
-        doc_id_list = self.__find_k_most_similar_documents(query, answer_dict.keys(), document_length, self.champions_dict, scoring_vector, K, main_dict)
+        doc_id_list = self.__find_k_most_similar_documents(query, answer_dict.keys(), document_length,
+                                                           self.champions_dict, scoring_vector, K, main_dict)
         return doc_id_list
 
-    def __find_k_most_similar_documents(self, query: str, documents_id: list, documents_length: int, dictionary: dict, scoring_vector: ScoringVector, K, main_dict=None):
+    def __find_k_most_similar_documents(self, query: str, documents_id: list, documents_length: int, dictionary: dict,
+                                        scoring_vector: ScoringVector, K, main_dict=None):
         docId_similarity_list = []
         docId_similarity_size = 0
         for doc_id in documents_id:
-            similarity = scoring_vector.similarity_query_and_doc(query, doc_id, documents_length, dictionary, True, main_dict)
+            similarity = scoring_vector.similarity_query_and_doc(query, doc_id, documents_length, dictionary, True,
+                                                                 main_dict)
             if similarity != 0:
                 # heapq sort tuple based on first element of tuple
                 docId_similarity_list.append((similarity, doc_id))

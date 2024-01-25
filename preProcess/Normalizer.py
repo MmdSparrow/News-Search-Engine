@@ -12,18 +12,18 @@ class Normalizer:
         for i in range(documents_content_length):
             doc = self.__delete_end_of_content(documents_content[i])
             doc = self.__space_correction(doc)
+            doc = self.__verb_prefix_separation(doc)
             doc = self.__unicode_replacement(doc)
             doc = self.__character_delete(doc)
             doc = self.__english_digit_replacement(doc)
-            doc = self.__verb_prefix_separation(doc)
             documents_content[i] = self.__abbreviation_replacement(doc)
 
     def normalize_query(self, query: str):
         query = self.__space_correction(query)
+        query = self.__verb_prefix_separation(query)
         query = self.__unicode_replacement(query)
         query = self.__character_delete(query)
         query = self.__english_digit_replacement(query)
-        query = self.__verb_prefix_separation(query)
         return self.__abbreviation_replacement(query)
 
     def __delete_end_of_content(self, doc_string):
@@ -97,8 +97,8 @@ class Normalizer:
         # alef keshide bayad character ghablish fathe bashe baadesh alef biad un moghe mishe alef keshide. pas bayad ghabl az hazf fathe hazf shavad!
         CHARACTER_DELETE_KEYS = ['ْ', 'ٌ', 'ٍ', 'ً', 'ُ', 'ِ', 'َ', 'ّ', '!', '>', '<', ',', '،', 'ٰ', '؛', ':', '{',
                                  '}', '[', ']', ')', '(', '*', ';', '\"', '\'', '. ', ' .']
-        # CHARACTER_DELETE_VALUE = ' '  # space is better than nothing: 'cuase the writing rules may not have been followed correctly (eg. lab lab lab.lab lab lab)
-        CHARACTER_DELETE_VALUE = ''
+        CHARACTER_DELETE_VALUE = ' '  # space is better than nothing: 'cuase the writing rules may not have been followed correctly (eg. lab lab lab.lab lab lab)
+        # CHARACTER_DELETE_VALUE = ''
 
         character_delete_item = {}
         for char in CHARACTER_DELETE_KEYS:

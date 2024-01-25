@@ -1,6 +1,7 @@
 import heapq
 import pickle
 from index.PositionalIndex import PositionalIndex
+from preProcess.PreProcessor import PreProcessor
 from scoring.ScoringVector import ScoringVector
 from chmpionsIndex.ChampionsLists import ChampionsLists
 
@@ -25,11 +26,9 @@ class IRSystem:
         # self, query: str, answer_dict, document_length, scoring_vector
         doc_id_list = champions_list.search_query_in_champions_list(query, positional_index.documents_title_url_dict, positional_index.document_length, scoring_vector,
                                                                     self.K, positional_index.dictionary)
-        # reminded = self.K - len(doc_id_list)
-        # if reminded != 0:
-        #     doc_id_list = self.__find_k_most_similar_documents(query, reminded, positional_index.documents_title_url_dict.keys(), positional_index.document_length,
-        #                                                        positional_index.dictionary,
-        #                                                        scoring_vector)
+        reminded = self.K - len(doc_id_list)
+        if reminded != 0:
+            doc_id_list = self.__search_query_in_main_index(query, positional_index.documents_title_url_dict, positional_index.document_length, scoring_vector, self.K, positional_index.dictionary)
         if (len(doc_id_list) == 0):
             print("No result!")
         else:
@@ -96,17 +95,28 @@ class IRSystem:
         query = input()
         return query
 
-    def __find_k_most_similar_documents(self, query: str, k: int, documents_id: list, documents_length: int, dictionary: dict, scoring_vector: ScoringVector):
+    def __search_query_in_main_index(self, query: str, answer_dict, document_length, scoring_vector, K, main_dict):
+        # normalize query
+        preprocessor = PreProcessor()
+        query = preprocessor.query_preprocessor_handler(query)
+
+        # find k most similar in champion dict
+        doc_id_list = self.__find_k_most_similar_documents(query, answer_dict.keys(), document_length,
+                                                           main_dict, scoring_vector, K)
+        return doc_id_list
+
+    def __find_k_most_similar_documents(self, query: str, documents_id: list, documents_length: int, dictionary: dict,
+                                        scoring_vector: ScoringVector, K, main_dict=None):
         docId_similarity_list = []
         docId_similarity_size = 0
         for doc_id in documents_id:
-            similarity = scoring_vector.similarity_query_and_doc(query, doc_id, documents_length, dictionary)
+            similarity = scoring_vector.similarity_query_and_doc(query, doc_id, documents_length, dictionary, False,
+                                                                 main_dict)
             if similarity != 0:
                 # heapq sort tuple based on first element of tuple
                 docId_similarity_list.append((similarity, doc_id))
                 docId_similarity_size += 1
-        self.__find_k_largest_element(docId_similarity_list, docId_similarity_size, k)
-        return docId_similarity_list
+        return self.__find_k_largest_element(docId_similarity_list, docId_similarity_size, K)
 
     def __find_k_largest_element(self, array: list, array_size: int, k: int) -> list[str]:
         result = []
