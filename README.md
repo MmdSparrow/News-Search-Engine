@@ -14,6 +14,11 @@ The retrieval can be done in multiple modes:
   <img src="https://github.com/NegarMov/News-Search-Engine/blob/master/output.jpg" alt="Sample Output" width="800"/>
 </p>
 
+This project also addresses the following challenges:
+. Phrasal verbs in the Persian language, such as “می‌خواهم بروم”
+. Characters with multiple written forms in Persian, such as “ي” and “ی”
+. Variations in spelling of the same word in colloquial usage
+
 ## Preprocessing
 Various methods of preprocessing are applied both to the documents and the queries, including:
 * Normalization
